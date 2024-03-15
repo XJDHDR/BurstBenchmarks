@@ -1,5 +1,7 @@
-#define NATIVE_LIB_IS_GCC
-#define SCRIPTING_BACKEND_IS_MONO	// ENABLE_MONO and ENABLE_IL2CPP don't seem to work. The former is always true and latter always false.
+//#define NATIVE_LIB_IS_GCC
+//#define NATIVE_LIB_IS_CLANG
+#define NATIVE_LIB_IS_MS
+//#define NATIVE_LIB_IS_RUST
 
 using System.IO;
 using System.Runtime.CompilerServices;
@@ -22,35 +24,48 @@ public partial class Benchmarks : SystemBase {
 	
 #if NATIVE_LIB_IS_GCC
 	private const string nativeLibraryPrefixString = "GCC";
-	private const string nativeLibrary = "benchmarks-gcc";
-#else
+	private const string nativeLibrary = "benchmarks_gcc";
+#elif NATIVE_LIB_IS_CLANG
 	private const string nativeLibraryPrefixString = "Clang";
-	private const string nativeLibrary = "benchmarks-clang";
+	private const string nativeLibrary = "benchmarks_clang";
+#elif NATIVE_LIB_IS_MS
+	private const string nativeLibraryPrefixString = "MS";
+	private const string nativeLibrary = "benchmarks_ms";
+#elif NATIVE_LIB_IS_RUST
+	private const string nativeLibraryPrefixString = "Rust";
+	private const string nativeLibrary = "benchmarks_rust";
 #endif
 
-#if SCRIPTING_BACKEND_IS_MONO
-	private const string scriptingBackend = "Mono JIT";
-#else
-	private const string scriptingBackend = "IL2CPP";
-#endif
+	private readonly string scriptingBackend;
+
+	public Benchmarks()
+	{
+	#if ENABLE_MONO
+		scriptingBackend = "Mono JIT";
+	#elif ENABLE_IL2CPP
+		scriptingBackend = "IL2CPP";
+	#else
+		scriptingBackend = "Unknown backend";
+	#endif
+	}
 
 	private const bool
-		burstEnabled = true,
+		burstEnabled = false,//Last enabled
 		nativeLibraryEnabled = true,
 		scriptBackendEnabled = true;
 
 	private const bool
 		fibonacciEnabled = true,
-		mandelbrotEnabled = true,
-		nbodyEnabled = true,
-		sieveOfEratosthenesEnabled = true,
-		pixarRaytracerEnabled = true,
-		firefliesFlockingEnabled = true,
-		polynomialsEnabled = true,
-		particleKinematicsEnabled = true,
-		arcfourEnabled = true,
-		seahashEnabled = true,
-		radixEnabled = true;
+		mandelbrotEnabled = false,
+		nbodyEnabled = false,
+		sieveOfEratosthenesEnabled = false,
+		pixarRaytracerEnabled = false,
+		firefliesFlockingEnabled = false,
+		polynomialsEnabled = false,
+		particleKinematicsEnabled = false,
+		arcfourEnabled = false,
+		seahashEnabled = false,
+		radixEnabled = false;
 
 	private const uint
 		fibonacciNumber = 46,

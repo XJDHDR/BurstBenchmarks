@@ -1,30 +1,39 @@
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Text;
+using NET_project;
+// ReSharper disable InconsistentNaming
+// ReSharper disable CheckNamespace
+// ReSharper disable ForCanBeConvertedToForeach
+// ReSharper disable ConvertSwitchStatementToSwitchExpression
 
-public class Benchmarks {
+public static class Benchmarks {
 	// Options
-
-	private const string 
-		nativeLibrary = "benchmarks-gcc",
-		nativeLibNamePrefix = "GCC";
-		//nativeLibrary = "benchmarks-clang",
-		//nativeLibNamePrefix = "Clang";
+	
+	// Comment out libs that won't be used.
+	private static readonly string[] nativeLibNames = {
+		"GCC",
+		"Clang",
+		"MS",
+		"Rust",
+	};
 
 	private const bool
 		netRyuJitEnabled = true,
 		nativeLibEnabled = true;
 
 	private const bool
-		fibonacciEnabled = true,
-		mandelbrotEnabled = true,
-		nbodyEnabled = true,
-		sieveOfEratosthenesEnabled = true,
-		pixarRaytracerEnabled = true,
-		firefliesFlockingEnabled = true,
-		polynomialsEnabled = true,
-		particleKinematicsEnabled = true,
-		arcfourEnabled = true,
-		seahashEnabled = true,
+		fibonacciEnabled = false,
+		mandelbrotEnabled = false,
+		nbodyEnabled = false,
+		sieveOfEratosthenesEnabled = false,
+		pixarRaytracerEnabled = false,
+		firefliesFlockingEnabled = false,
+		polynomialsEnabled = false,
+		particleKinematicsEnabled = false,
+		arcfourEnabled = false,
+		seahashEnabled = false,
 		radixEnabled = true;
 
 	private const uint
@@ -84,9 +93,27 @@ public class Benchmarks {
 	private struct FibonacciGCC : IJob {
 		public uint number;
 		public uint result;
+		public string libName;
 
 		public void Run() {
-			result = benchmark_fibonacci(number);
+			switch (libName)
+			{
+				case "GCC":
+					result = GccNativeBindings.benchmark_fibonacci(number);
+					break;
+
+				case "Clang":
+					result = ClangNativeBindings.benchmark_fibonacci(number);
+					break;
+
+				case "MS":
+					result = MsNativeBindings.benchmark_fibonacci(number);
+					break;
+
+				case "Rust":
+					result = RustNativeBindings.benchmark_fibonacci(number);
+					break;
+			}
 		}
 	}
 
@@ -149,9 +176,27 @@ public class Benchmarks {
 		public uint height;
 		public uint iterations;
 		public float result;
+		public string libName;
 
 		public void Run() {
-			result = benchmark_mandelbrot(width, height, iterations);
+			switch (libName)
+			{
+				case "GCC":
+					result = GccNativeBindings.benchmark_mandelbrot(width, height, iterations);
+					break;
+
+				case "Clang":
+					result = ClangNativeBindings.benchmark_mandelbrot(width, height, iterations);
+					break;
+
+				case "MS":
+					result = MsNativeBindings.benchmark_mandelbrot(width, height, iterations);
+					break;
+
+				case "Rust":
+					result = RustNativeBindings.benchmark_mandelbrot(width, height, iterations);
+					break;
+			}
 		}
 	}
 
@@ -333,9 +378,27 @@ public class Benchmarks {
 	private unsafe struct NBodyGCC : IJob {
 		public uint advancements;
 		public double result;
+		public string libName;
 
 		public void Run() {
-			result = benchmark_nbody(advancements);
+			switch (libName)
+			{
+				case "GCC":
+					result = GccNativeBindings.benchmark_nbody(advancements);
+					break;
+				
+				case "Clang":
+					result = ClangNativeBindings.benchmark_nbody(advancements);
+					break;
+				
+				case "MS":
+					result = MsNativeBindings.benchmark_nbody(advancements);
+					break;
+				
+				case "Rust":
+					result = RustNativeBindings.benchmark_nbody(advancements);
+					break;
+			}
 		}
 	}
 
@@ -384,9 +447,27 @@ public class Benchmarks {
 	private unsafe struct SieveOfEratosthenesGCC : IJob {
 		public uint iterations;
 		public uint result;
+		public string libName;
 
 		public void Run() {
-			result = benchmark_sieve_of_eratosthenes(iterations);
+			switch (libName)
+			{
+				case "GCC":
+					result = GccNativeBindings.benchmark_sieve_of_eratosthenes(iterations);
+					break;
+
+				case "Clang":
+					result = ClangNativeBindings.benchmark_sieve_of_eratosthenes(iterations);
+					break;
+
+				case "MS":
+					result = MsNativeBindings.benchmark_sieve_of_eratosthenes(iterations);
+					break;
+
+				case "Rust":
+					result = RustNativeBindings.benchmark_sieve_of_eratosthenes(iterations);
+					break;
+			}
 		}
 	}
 
@@ -693,9 +774,27 @@ public class Benchmarks {
 		public uint height;
 		public uint samples;
 		public float result;
+		public string libName;
 
 		public void Run() {
-			result = benchmark_pixar_raytracer(width, height, samples);
+			switch (libName)
+			{
+				case "GCC":
+					result = GccNativeBindings.benchmark_pixar_raytracer(width, height, samples);
+					break;
+
+				case "Clang":
+					result = ClangNativeBindings.benchmark_pixar_raytracer(width, height, samples);
+					break;
+
+				case "MS":
+					result = MsNativeBindings.benchmark_pixar_raytracer(width, height, samples);
+					break;
+
+				case "Rust":
+					result = RustNativeBindings.benchmark_pixar_raytracer(width, height, samples);
+					break;
+			}
 		}
 	}
 
@@ -886,9 +985,27 @@ public class Benchmarks {
 		public uint boids;
 		public uint lifetime;
 		public float result;
+		public string libName;
 
 		public void Run() {
-			result = benchmark_fireflies_flocking(boids, lifetime);
+			switch (libName)
+			{
+				case "GCC":
+					result = GccNativeBindings.benchmark_fireflies_flocking(boids, lifetime);
+					break;
+
+				case "Clang":
+					result = ClangNativeBindings.benchmark_fireflies_flocking(boids, lifetime);
+					break;
+
+				case "MS":
+					result = MsNativeBindings.benchmark_fireflies_flocking(boids, lifetime);
+					break;
+
+				case "Rust":
+					result = RustNativeBindings.benchmark_fireflies_flocking(boids, lifetime);
+					break;
+			}
 		}
 	}
 
@@ -933,9 +1050,27 @@ public class Benchmarks {
 	private unsafe struct PolynomialsGCC : IJob {
 		public uint iterations;
 		public float result;
+		public string libName;
 
 		public void Run() {
-			result = benchmark_polynomials(iterations);
+			switch (libName)
+			{
+				case "GCC":
+					result = GccNativeBindings.benchmark_polynomials(iterations);
+					break;
+
+				case "Clang":
+					result = ClangNativeBindings.benchmark_polynomials(iterations);
+					break;
+
+				case "MS":
+					result = MsNativeBindings.benchmark_polynomials(iterations);
+					break;
+
+				case "Rust":
+					result = RustNativeBindings.benchmark_polynomials(iterations);
+					break;
+			}
 		}
 	}
 
@@ -988,9 +1123,27 @@ public class Benchmarks {
 		public uint quantity;
 		public uint iterations;
 		public float result;
+		public string libName;
 
 		public void Run() {
-			result = benchmark_particle_kinematics(quantity, iterations);
+			switch (libName)
+			{
+				case "GCC":
+					result = GccNativeBindings.benchmark_particle_kinematics(quantity, iterations);
+					break;
+
+				case "Clang":
+					result = ClangNativeBindings.benchmark_particle_kinematics(quantity, iterations);
+					break;
+
+				case "MS":
+					result = MsNativeBindings.benchmark_particle_kinematics(quantity, iterations);
+					break;
+
+				case "Rust":
+					result = RustNativeBindings.benchmark_particle_kinematics(quantity, iterations);
+					break;
+			}
 		}
 	}
 
@@ -1084,9 +1237,27 @@ public class Benchmarks {
 	private unsafe struct ArcfourGCC : IJob {
 		public uint iterations;
 		public int result;
+		public string libName;
 
 		public void Run() {
-			result = benchmark_arcfour(iterations);
+			switch (libName)
+			{
+				case "GCC":
+					result = GccNativeBindings.benchmark_arcfour(iterations);
+					break;
+
+				case "Clang":
+					result = ClangNativeBindings.benchmark_arcfour(iterations);
+					break;
+
+				case "MS":
+					result = MsNativeBindings.benchmark_arcfour(iterations);
+					break;
+
+				case "Rust":
+					result = RustNativeBindings.benchmark_arcfour(iterations);
+					break;
+			}
 		}
 	}
 
@@ -1100,7 +1271,7 @@ public class Benchmarks {
 			result = Seahash(iterations);
 		}
 
-		private ulong Seahash(uint iterations) {
+		private ulong Seahash(uint Iterations) {
 			const int bufferLength = 1024 * 128;
 
 			byte* buffer = (byte*)Malloc(bufferLength, 8, out void* bufferPointer);
@@ -1111,7 +1282,7 @@ public class Benchmarks {
 
 			ulong hash = 0;
 
-			for (uint i = 0; i < iterations; i++) {
+			for (uint i = 0; i < Iterations; i++) {
 				hash = Compute(buffer, bufferLength, 0x16F11FE89B0D677C, 0xB480A793D8E6C86C, 0x6FE2E5AAF078EBC9, 0x14F994A4C5259381);
 			}
 
@@ -1189,9 +1360,27 @@ public class Benchmarks {
 	private unsafe struct SeahashGCC : IJob {
 		public uint iterations;
 		public ulong result;
+		public string libName;
 
 		public void Run() {
-			result = benchmark_seahash(iterations);
+			switch (libName)
+			{
+				case "GCC":
+					result = GccNativeBindings.benchmark_seahash(iterations);
+					break;
+
+				case "Clang":
+					result = ClangNativeBindings.benchmark_seahash(iterations);
+					break;
+
+				case "MS":
+					result = MsNativeBindings.benchmark_seahash(iterations);
+					break;
+
+				case "Rust":
+					result = RustNativeBindings.benchmark_seahash(iterations);
+					break;
+			}
 		}
 	}
 
@@ -1219,7 +1408,7 @@ public class Benchmarks {
 					array[b] = Random();
 				}
 
-				Sort(array, arrayLength);
+				Sort(array, arrayLength, (a == 0));
 			}
 
 			int head = array[0];
@@ -1249,15 +1438,16 @@ public class Benchmarks {
 			return largest;
 		}
 
-		private void Sort(int* array, int length) {
+		private void Sort(int* array, int length, bool printDone) {
 			int i;
-			int* semiSorted = stackalloc int[length];
+			Span<int> semiSorted = stackalloc int[length];
 			int significantDigit = 1;
 			int largest = FindLargest(array, length);
 
+			Span<int> bucket = stackalloc int[10];
+			int loops = 0;
 			while (largest / significantDigit > 0) {
-				int* bucket = stackalloc int[10];
-
+				loops++;
 				for (i = 0; i < length; i++) {
 					bucket[(array[i] / significantDigit) % 10]++;
 				}
@@ -1266,12 +1456,37 @@ public class Benchmarks {
 					bucket[i] += bucket[i - 1];
 				}
 
-				for (i = length - 1; i >= 0; i--) {
-					semiSorted[--bucket[(array[i] / significantDigit) % 10]] = array[i];
+				StringBuilder values = new();
+				for (i = length - 1; i >= 0; i--)
+				{
+					int bucketIndex = (array[i] / significantDigit) % 10;
+					int semiSortedIndex = (--bucket[bucketIndex]) % length;
+					semiSorted[semiSortedIndex] = array[i];
+					
+					if (printDone && loops <= 2)
+					{
+						values.AppendLine($"Loop {loops}, Index {i} = {semiSorted[semiSortedIndex]}");
+					}
 				}
+
+				/*
+				if (printDone && loops <= 2)
+				{
+					File.AppendAllText("./benchmark_output_cs.txt", values.ToString());
+				}*/
 
 				for (i = 0; i < length; i++) {
 					array[i] = semiSorted[i];
+					
+					if (printDone && loops <= 1)
+					{
+						values.AppendLine($"Loop {loops}, Index {i} = {array[i]}");
+					}
+				}
+
+				if (printDone && loops <= 1)
+				{
+					File.AppendAllText("./benchmark_output_cs.txt", values.ToString());
 				}
 
 				significantDigit *= 10;
@@ -1282,16 +1497,37 @@ public class Benchmarks {
 	private unsafe struct RadixGCC : IJob {
 		public uint iterations;
 		public int result;
+		public string libName;
 
 		public void Run() {
-			result = benchmark_radix(iterations);
+			switch (libName)
+			{
+				case "GCC":
+					result = GccNativeBindings.benchmark_radix(iterations);
+					break;
+
+				case "Clang":
+					result = ClangNativeBindings.benchmark_radix(iterations);
+					break;
+
+				case "MS":
+					result = MsNativeBindings.benchmark_radix(iterations);
+					break;
+
+				case "Rust":
+					result = RustNativeBindings.benchmark_radix(iterations);
+					break;
+			}
 		}
 	}
 
 	[STAThread]
 	private static void Main() {
-		var stopwatch = new System.Diagnostics.Stopwatch();
-		long time = 0;
+		Process thisProcess = Process.GetCurrentProcess();
+		thisProcess.PriorityClass = ProcessPriorityClass.High;
+		
+		var stopwatch = new Stopwatch();
+		long time;
 		using (StreamWriter benchmarkResultsStreamWriter = new($"{Directory.GetCurrentDirectory()}/Results.txt", true))
 		{
 			benchmarkResultsStreamWriter.WriteLine("\r\nBenchmark Results:");
@@ -1308,28 +1544,34 @@ public class Benchmarks {
 
 				stopwatch.Restart();
 				benchmark.Run();
+				stopwatch.Stop();
 
 				time = stopwatch.ElapsedTicks;
 
-				Console.WriteLine($"(RyuJIT) Fibonacci: {time} ticks");
-				benchmarkResultsStreamWriter.WriteLine($"(RyuJIT) Fibonacci: {time} ticks");
+				Console.WriteLine($"(RyuJIT) Fibonacci: {time} ticks. Result: {benchmark.result}");
+				benchmarkResultsStreamWriter.WriteLine($"(RyuJIT) Fibonacci: {time} ticks. Result: {benchmark.result}");
 			}
 
 			if (nativeLibEnabled && fibonacciEnabled) {
-				var benchmark = new FibonacciGCC {
-					number = fibonacciNumber
-				};
+				for (int i = 0; i < nativeLibNames.Length; i++)
+				{
+					var benchmark = new FibonacciGCC {
+						number = fibonacciNumber,
+						libName = nativeLibNames[i]
+					};
 
-				stopwatch.Stop();
-				benchmark.Run();
+					stopwatch.Stop();
+					benchmark.Run();
 
-				stopwatch.Restart();
-				benchmark.Run();
+					stopwatch.Restart();
+					benchmark.Run();
+					stopwatch.Stop();
 
-				time = stopwatch.ElapsedTicks;
+					time = stopwatch.ElapsedTicks;
 
-				Console.WriteLine($"({nativeLibNamePrefix}) Fibonacci: {time} ticks");
-				benchmarkResultsStreamWriter.WriteLine($"({nativeLibNamePrefix}) Fibonacci: {time} ticks");
+					Console.WriteLine($"({nativeLibNames[i]}) Fibonacci: {time} ticks. Result: {benchmark.result}");
+					benchmarkResultsStreamWriter.WriteLine($"({nativeLibNames[i]}) Fibonacci: {time} ticks. Result: {benchmark.result}");
+				}
 			}
 
 			if (netRyuJitEnabled && mandelbrotEnabled) {
@@ -1344,30 +1586,36 @@ public class Benchmarks {
 
 				stopwatch.Restart();
 				benchmark.Run();
+				stopwatch.Stop();
 
 				time = stopwatch.ElapsedTicks;
 
-				Console.WriteLine($"(RyuJIT) Mandelbrot: {time} ticks");
-				benchmarkResultsStreamWriter.WriteLine($"(RyuJIT) Mandelbrot: {time} ticks");
+				Console.WriteLine($"(RyuJIT) Mandelbrot: {time} ticks. Result: {benchmark.result}");
+				benchmarkResultsStreamWriter.WriteLine($"(RyuJIT) Mandelbrot: {time} ticks. Result: {benchmark.result}");
 			}
 
 			if (nativeLibEnabled && mandelbrotEnabled) {
-				var benchmark = new MandelbrotGCC {
-					width = 1920,
-					height = 1080,
-					iterations = mandelbrotIterations
-				};
+				for (int i = 0; i < nativeLibNames.Length; i++)
+				{
+					var benchmark = new MandelbrotGCC {
+						width = 1920,
+						height = 1080,
+						iterations = mandelbrotIterations,
+						libName = nativeLibNames[i]
+					};
 
-				stopwatch.Stop();
-				benchmark.Run();
+					stopwatch.Stop();
+					benchmark.Run();
 
-				stopwatch.Restart();
-				benchmark.Run();
+					stopwatch.Restart();
+					benchmark.Run();
+					stopwatch.Stop();
 
-				time = stopwatch.ElapsedTicks;
+					time = stopwatch.ElapsedTicks;
 
-				Console.WriteLine($"({nativeLibNamePrefix}) Mandelbrot: {time} ticks");
-				benchmarkResultsStreamWriter.WriteLine($"({nativeLibNamePrefix}) Mandelbrot: {time} ticks");
+					Console.WriteLine($"({nativeLibNames[i]}) Mandelbrot: {time} ticks. Result: {benchmark.result}");
+					benchmarkResultsStreamWriter.WriteLine($"({nativeLibNames[i]}) Mandelbrot: {time} ticks. Result: {benchmark.result}");
+				}
 			}
 
 			if (netRyuJitEnabled && nbodyEnabled) {
@@ -1380,28 +1628,34 @@ public class Benchmarks {
 
 				stopwatch.Restart();
 				benchmark.Run();
+				stopwatch.Stop();
 
 				time = stopwatch.ElapsedTicks;
 
-				Console.WriteLine($"(RyuJIT) NBody: {time} ticks");
-				benchmarkResultsStreamWriter.WriteLine($"(RyuJIT) NBody: {time} ticks");
+				Console.WriteLine($"(RyuJIT) NBody: {time} ticks. Result: {benchmark.result}");
+				benchmarkResultsStreamWriter.WriteLine($"(RyuJIT) NBody: {time} ticks. Result: {benchmark.result}");
 			}
 
 			if (nativeLibEnabled && nbodyEnabled) {
-				var benchmark = new NBodyGCC {
-					advancements = nbodyAdvancements
-				};
+				for (int i = 0; i < nativeLibNames.Length; i++)
+				{
+					var benchmark = new NBodyGCC {
+						advancements = nbodyAdvancements,
+						libName = nativeLibNames[i]
+					};
 
-				stopwatch.Stop();
-				benchmark.Run();
+					stopwatch.Stop();
+					benchmark.Run();
 
-				stopwatch.Restart();
-				benchmark.Run();
+					stopwatch.Restart();
+					benchmark.Run();
+					stopwatch.Stop();
 
-				time = stopwatch.ElapsedTicks;
+					time = stopwatch.ElapsedTicks;
 
-				Console.WriteLine($"({nativeLibNamePrefix}) NBody: {time} ticks");
-				benchmarkResultsStreamWriter.WriteLine($"({nativeLibNamePrefix}) NBody: {time} ticks");
+					Console.WriteLine($"({nativeLibNames[i]}) NBody: {time} ticks. Result: {benchmark.result}");
+					benchmarkResultsStreamWriter.WriteLine($"({nativeLibNames[i]}) NBody: {time} ticks. Result: {benchmark.result}");
+				}
 			}
 
 			if (netRyuJitEnabled && sieveOfEratosthenesEnabled) {
@@ -1414,28 +1668,34 @@ public class Benchmarks {
 
 				stopwatch.Restart();
 				benchmark.Run();
+				stopwatch.Stop();
 
 				time = stopwatch.ElapsedTicks;
 
-				Console.WriteLine($"(RyuJIT) Sieve of Eratosthenes: {time} ticks");
-				benchmarkResultsStreamWriter.WriteLine($"(RyuJIT) Sieve of Eratosthenes: {time} ticks");
+				Console.WriteLine($"(RyuJIT) Sieve of Eratosthenes: {time} ticks. Result: {benchmark.result}");
+				benchmarkResultsStreamWriter.WriteLine($"(RyuJIT) Sieve of Eratosthenes: {time} ticks. Result: {benchmark.result}");
 			}
 
 			if (nativeLibEnabled && sieveOfEratosthenesEnabled) {
-				var benchmark = new SieveOfEratosthenesGCC {
-					iterations = sieveOfEratosthenesIterations
-				};
+				for (int i = 0; i < nativeLibNames.Length; i++)
+				{
+					var benchmark = new SieveOfEratosthenesGCC {
+						iterations = sieveOfEratosthenesIterations,
+						libName = nativeLibNames[i]
+					};
 
-				stopwatch.Stop();
-				benchmark.Run();
+					stopwatch.Stop();
+					benchmark.Run();
 
-				stopwatch.Restart();
-				benchmark.Run();
+					stopwatch.Restart();
+					benchmark.Run();
+					stopwatch.Stop();
 
-				time = stopwatch.ElapsedTicks;
+					time = stopwatch.ElapsedTicks;
 
-				Console.WriteLine($"({nativeLibNamePrefix}) Sieve of Eratosthenes: {time} ticks");
-				benchmarkResultsStreamWriter.WriteLine($"({nativeLibNamePrefix}) Sieve of Eratosthenes: {time} ticks");
+					Console.WriteLine($"({nativeLibNames[i]}) Sieve of Eratosthenes: {time} ticks. Result: {benchmark.result}");
+					benchmarkResultsStreamWriter.WriteLine($"({nativeLibNames[i]}) Sieve of Eratosthenes: {time} ticks. Result: {benchmark.result}");
+				}
 			}
 
 			if (netRyuJitEnabled && pixarRaytracerEnabled) {
@@ -1450,30 +1710,36 @@ public class Benchmarks {
 
 				stopwatch.Restart();
 				benchmark.Run();
+				stopwatch.Stop();
 
 				time = stopwatch.ElapsedTicks;
 
-				Console.WriteLine($"(RyuJIT) Pixar Raytracer: {time} ticks");
-				benchmarkResultsStreamWriter.WriteLine($"(RyuJIT) Pixar Raytracer: {time} ticks");
+				Console.WriteLine($"(RyuJIT) Pixar Raytracer: {time} ticks. Result: {benchmark.result}");
+				benchmarkResultsStreamWriter.WriteLine($"(RyuJIT) Pixar Raytracer: {time} ticks. Result: {benchmark.result}");
 			}
 
 			if (nativeLibEnabled && pixarRaytracerEnabled) {
-				var benchmark = new PixarRaytracerGCC {
-					width = 720,
-					height = 480,
-					samples = pixarRaytracerSamples
-				};
+				for (int i = 0; i < nativeLibNames.Length; i++)
+				{
+					var benchmark = new PixarRaytracerGCC {
+						width = 720,
+						height = 480,
+						samples = pixarRaytracerSamples,
+						libName = nativeLibNames[i]
+					};
 
-				stopwatch.Stop();
-				benchmark.Run();
+					stopwatch.Stop();
+					benchmark.Run();
 
-				stopwatch.Restart();
-				benchmark.Run();
+					stopwatch.Restart();
+					benchmark.Run();
+					stopwatch.Stop();
 
-				time = stopwatch.ElapsedTicks;
+					time = stopwatch.ElapsedTicks;
 
-				Console.WriteLine($"({nativeLibNamePrefix}) Pixar Raytracer: {time} ticks");
-				benchmarkResultsStreamWriter.WriteLine($"({nativeLibNamePrefix}) Pixar Raytracer: {time} ticks");
+					Console.WriteLine($"({nativeLibNames[i]}) Pixar Raytracer: {time} ticks. Result: {benchmark.result}");
+					benchmarkResultsStreamWriter.WriteLine($"({nativeLibNames[i]}) Pixar Raytracer: {time} ticks. Result: {benchmark.result}");
+				}
 			}
 
 			if (netRyuJitEnabled && firefliesFlockingEnabled) {
@@ -1487,29 +1753,35 @@ public class Benchmarks {
 
 				stopwatch.Restart();
 				benchmark.Run();
+				stopwatch.Stop();
 
 				time = stopwatch.ElapsedTicks;
 
-				Console.WriteLine($"(RyuJIT) Fireflies Flocking: {time} ticks");
-				benchmarkResultsStreamWriter.WriteLine($"(RyuJIT) Fireflies Flocking: {time} ticks");
+				Console.WriteLine($"(RyuJIT) Fireflies Flocking: {time} ticks. Result: {benchmark.result}");
+				benchmarkResultsStreamWriter.WriteLine($"(RyuJIT) Fireflies Flocking: {time} ticks. Result: {benchmark.result}");
 			}
 
 			if (nativeLibEnabled && firefliesFlockingEnabled) {
-				var benchmark = new FirefliesFlockingGCC {
-					boids = 1000,
-					lifetime = firefliesFlockingLifetime
-				};
+				for (int i = 0; i < nativeLibNames.Length; i++)
+				{
+					var benchmark = new FirefliesFlockingGCC {
+						boids = 1000,
+						lifetime = firefliesFlockingLifetime,
+						libName = nativeLibNames[i]
+					};
 
-				stopwatch.Stop();
-				benchmark.Run();
+					stopwatch.Stop();
+					benchmark.Run();
 
-				stopwatch.Restart();
-				benchmark.Run();
+					stopwatch.Restart();
+					benchmark.Run();
+					stopwatch.Stop();
 
-				time = stopwatch.ElapsedTicks;
+					time = stopwatch.ElapsedTicks;
 
-				Console.WriteLine($"({nativeLibNamePrefix}) Fireflies Flocking: {time} ticks");
-				benchmarkResultsStreamWriter.WriteLine($"({nativeLibNamePrefix}) Fireflies Flocking: {time} ticks");
+					Console.WriteLine($"({nativeLibNames[i]}) Fireflies Flocking: {time} ticks. Result: {benchmark.result}");
+					benchmarkResultsStreamWriter.WriteLine($"({nativeLibNames[i]}) Fireflies Flocking: {time} ticks. Result: {benchmark.result}");
+				}
 			}
 
 			if (netRyuJitEnabled && polynomialsEnabled) {
@@ -1522,28 +1794,34 @@ public class Benchmarks {
 
 				stopwatch.Restart();
 				benchmark.Run();
+				stopwatch.Stop();
 
 				time = stopwatch.ElapsedTicks;
 
-				Console.WriteLine($"(RyuJIT) Polynomials: {time} ticks");
-				benchmarkResultsStreamWriter.WriteLine($"(RyuJIT) Polynomials: {time} ticks");
+				Console.WriteLine($"(RyuJIT) Polynomials: {time} ticks. Result: {benchmark.result}");
+				benchmarkResultsStreamWriter.WriteLine($"(RyuJIT) Polynomials: {time} ticks. Result: {benchmark.result}");
 			}
 
 			if (nativeLibEnabled && polynomialsEnabled) {
-				var benchmark = new PolynomialsGCC {
-					iterations = polynomialsIterations
-				};
+				for (int i = 0; i < nativeLibNames.Length; i++)
+				{
+					var benchmark = new PolynomialsGCC {
+						iterations = polynomialsIterations,
+						libName = nativeLibNames[i]
+					};
 
-				stopwatch.Stop();
-				benchmark.Run();
+					stopwatch.Stop();
+					benchmark.Run();
 
-				stopwatch.Restart();
-				benchmark.Run();
+					stopwatch.Restart();
+					benchmark.Run();
+					stopwatch.Stop();
 
-				time = stopwatch.ElapsedTicks;
+					time = stopwatch.ElapsedTicks;
 
-				Console.WriteLine($"({nativeLibNamePrefix}) Polynomials: {time} ticks");
-				benchmarkResultsStreamWriter.WriteLine($"({nativeLibNamePrefix}) Polynomials: {time} ticks");
+					Console.WriteLine($"({nativeLibNames[i]}) Polynomials: {time} ticks. Result: {benchmark.result}");
+					benchmarkResultsStreamWriter.WriteLine($"({nativeLibNames[i]}) Polynomials: {time} ticks. Result: {benchmark.result}");
+				}
 			}
 
 			if (netRyuJitEnabled && particleKinematicsEnabled) {
@@ -1557,29 +1835,35 @@ public class Benchmarks {
 
 				stopwatch.Restart();
 				benchmark.Run();
+				stopwatch.Stop();
 
 				time = stopwatch.ElapsedTicks;
 
-				Console.WriteLine($"(RyuJIT) Particle Kinematics: {time} ticks");
-				benchmarkResultsStreamWriter.WriteLine($"(RyuJIT) Particle Kinematics: {time} ticks");
+				Console.WriteLine($"(RyuJIT) Particle Kinematics: {time} ticks. Result: {benchmark.result}");
+				benchmarkResultsStreamWriter.WriteLine($"(RyuJIT) Particle Kinematics: {time} ticks. Result: {benchmark.result}");
 			}
 
 			if (nativeLibEnabled && particleKinematicsEnabled) {
-				var benchmark = new ParticleKinematicsGCC {
-					quantity = 1000,
-					iterations = particleKinematicsIterations
-				};
+				for (int i = 0; i < nativeLibNames.Length; i++)
+				{
+					var benchmark = new ParticleKinematicsGCC {
+						quantity = 1000,
+						iterations = particleKinematicsIterations,
+						libName = nativeLibNames[i]
+					};
 
-				stopwatch.Stop();
-				benchmark.Run();
+					stopwatch.Stop();
+					benchmark.Run();
 
-				stopwatch.Restart();
-				benchmark.Run();
+					stopwatch.Restart();
+					benchmark.Run();
+					stopwatch.Stop();
 
-				time = stopwatch.ElapsedTicks;
+					time = stopwatch.ElapsedTicks;
 
-				Console.WriteLine($"({nativeLibNamePrefix}) Particle Kinematics: {time} ticks");
-				benchmarkResultsStreamWriter.WriteLine($"({nativeLibNamePrefix}) Particle Kinematics: {time} ticks");
+					Console.WriteLine($"({nativeLibNames[i]}) Particle Kinematics: {time} ticks. Result: {benchmark.result}");
+					benchmarkResultsStreamWriter.WriteLine($"({nativeLibNames[i]}) Particle Kinematics: {time} ticks. Result: {benchmark.result}");
+				}
 			}
 
 			if (netRyuJitEnabled && arcfourEnabled) {
@@ -1592,28 +1876,34 @@ public class Benchmarks {
 
 				stopwatch.Restart();
 				benchmark.Run();
+				stopwatch.Stop();
 
 				time = stopwatch.ElapsedTicks;
 
-				Console.WriteLine($"(RyuJIT) Arcfour: {time} ticks");
-				benchmarkResultsStreamWriter.WriteLine($"(RyuJIT) Arcfour: {time} ticks");
+				Console.WriteLine($"(RyuJIT) Arcfour: {time} ticks. Result: {benchmark.result}");
+				benchmarkResultsStreamWriter.WriteLine($"(RyuJIT) Arcfour: {time} ticks. Result: {benchmark.result}");
 			}
 
 			if (nativeLibEnabled && arcfourEnabled) {
-				var benchmark = new ArcfourGCC {
-					iterations = arcfourIterations
-				};
+				for (int i = 0; i < nativeLibNames.Length; i++)
+				{
+					var benchmark = new ArcfourGCC {
+						iterations = arcfourIterations,
+						libName = nativeLibNames[i]
+					};
 
-				stopwatch.Stop();
-				benchmark.Run();
+					stopwatch.Stop();
+					benchmark.Run();
 
-				stopwatch.Restart();
-				benchmark.Run();
+					stopwatch.Restart();
+					benchmark.Run();
+					stopwatch.Stop();
 
-				time = stopwatch.ElapsedTicks;
+					time = stopwatch.ElapsedTicks;
 
-				Console.WriteLine($"({nativeLibNamePrefix}) Arcfour: {time} ticks");
-				benchmarkResultsStreamWriter.WriteLine($"({nativeLibNamePrefix}) Arcfour: {time} ticks");
+					Console.WriteLine($"({nativeLibNames[i]}) Arcfour: {time} ticks. Result: {benchmark.result}");
+					benchmarkResultsStreamWriter.WriteLine($"({nativeLibNames[i]}) Arcfour: {time} ticks. Result: {benchmark.result}");
+				}
 			}
 
 			if (netRyuJitEnabled && seahashEnabled) {
@@ -1626,28 +1916,34 @@ public class Benchmarks {
 
 				stopwatch.Restart();
 				benchmark.Run();
+				stopwatch.Stop();
 
 				time = stopwatch.ElapsedTicks;
 
-				Console.WriteLine($"(RyuJIT) Seahash: {time} ticks");
-				benchmarkResultsStreamWriter.WriteLine($"(RyuJIT) Seahash: {time} ticks");
+				Console.WriteLine($"(RyuJIT) Seahash: {time} ticks. Result: {benchmark.result}");
+				benchmarkResultsStreamWriter.WriteLine($"(RyuJIT) Seahash: {time} ticks. Result: {benchmark.result}");
 			}
 
 			if (nativeLibEnabled && seahashEnabled) {
-				var benchmark = new SeahashGCC {
-					iterations = seahashIterations
-				};
+				for (int i = 0; i < nativeLibNames.Length; i++)
+				{
+					var benchmark = new SeahashGCC {
+						iterations = seahashIterations,
+						libName = nativeLibNames[i]
+					};
 
-				stopwatch.Stop();
-				benchmark.Run();
+					stopwatch.Stop();
+					benchmark.Run();
 
-				stopwatch.Restart();
-				benchmark.Run();
+					stopwatch.Restart();
+					benchmark.Run();
+					stopwatch.Stop();
 
-				time = stopwatch.ElapsedTicks;
+					time = stopwatch.ElapsedTicks;
 
-				Console.WriteLine($"({nativeLibNamePrefix}) Seahash: {time} ticks");
-				benchmarkResultsStreamWriter.WriteLine($"({nativeLibNamePrefix}) Seahash: {time} ticks");
+					Console.WriteLine($"({nativeLibNames[i]}) Seahash: {time} ticks. Result: {benchmark.result}");
+					benchmarkResultsStreamWriter.WriteLine($"({nativeLibNames[i]}) Seahash: {time} ticks. Result: {benchmark.result}");
+				}
 			}
 
 			if (netRyuJitEnabled && radixEnabled) {
@@ -1660,65 +1956,38 @@ public class Benchmarks {
 
 				stopwatch.Restart();
 				benchmark.Run();
+				stopwatch.Stop();
 
 				time = stopwatch.ElapsedTicks;
 
-				Console.WriteLine($"(RyuJIT) Radix: {time} ticks");
-				benchmarkResultsStreamWriter.WriteLine($"(RyuJIT) Radix: {time} ticks");
+				Console.WriteLine($"(RyuJIT) Radix: {time} ticks. Result: {benchmark.result}");
+				benchmarkResultsStreamWriter.WriteLine($"(RyuJIT) Radix: {time} ticks. Result: {benchmark.result}");
 			}
 
 			if (nativeLibEnabled && radixEnabled) {
-				var benchmark = new RadixGCC {
-					iterations = radixIterations
-				};
+				for (int i = 0; i < nativeLibNames.Length; i++)
+				{
+					var benchmark = new RadixGCC {
+						iterations = radixIterations,
+						libName = nativeLibNames[i]
+					};
 
-				stopwatch.Stop();
-				benchmark.Run();
+					stopwatch.Stop();
+					benchmark.Run();
 
-				stopwatch.Restart();
-				benchmark.Run();
+					stopwatch.Restart();
+					benchmark.Run();
+					stopwatch.Stop();
 
-				time = stopwatch.ElapsedTicks;
+					time = stopwatch.ElapsedTicks;
 
-				Console.WriteLine($"({nativeLibNamePrefix}) Radix: {time} ticks");
-				benchmarkResultsStreamWriter.WriteLine($"({nativeLibNamePrefix}) Radix: {time} ticks");
+					Console.WriteLine($"({nativeLibNames[i]}) Radix: {time} ticks. Result: {benchmark.result}");
+					benchmarkResultsStreamWriter.WriteLine($"({nativeLibNames[i]}) Radix: {time} ticks. Result: {benchmark.result}");
+				}
 			}
 
 			benchmarkResultsStreamWriter.Close();
 		}
 		Environment.Exit(0);
 	}
-
-	[DllImport(nativeLibrary, CallingConvention = CallingConvention.Cdecl)]
-	private static extern uint benchmark_fibonacci(uint number);
-
-	[DllImport(nativeLibrary, CallingConvention = CallingConvention.Cdecl)]
-	private static extern float benchmark_mandelbrot(uint width, uint height, uint iterations);
-
-	[DllImport(nativeLibrary, CallingConvention = CallingConvention.Cdecl)]
-	private static extern double benchmark_nbody(uint advancements);
-
-	[DllImport(nativeLibrary, CallingConvention = CallingConvention.Cdecl)]
-	private static extern uint benchmark_sieve_of_eratosthenes(uint iterations);
-
-	[DllImport(nativeLibrary, CallingConvention = CallingConvention.Cdecl)]
-	private static extern float benchmark_pixar_raytracer(uint width, uint height, uint samples);
-
-	[DllImport(nativeLibrary, CallingConvention = CallingConvention.Cdecl)]
-	private static extern float benchmark_fireflies_flocking(uint boids, uint lifetime);
-
-	[DllImport(nativeLibrary, CallingConvention = CallingConvention.Cdecl)]
-	private static extern float benchmark_polynomials(uint iterations);
-
-	[DllImport(nativeLibrary, CallingConvention = CallingConvention.Cdecl)]
-	private static extern float benchmark_particle_kinematics(uint quantity, uint iterations);
-
-	[DllImport(nativeLibrary, CallingConvention = CallingConvention.Cdecl)]
-	private static extern int benchmark_arcfour(uint iterations);
-
-	[DllImport(nativeLibrary, CallingConvention = CallingConvention.Cdecl)]
-	private static extern ulong benchmark_seahash(uint iterations);
-
-	[DllImport(nativeLibrary, CallingConvention = CallingConvention.Cdecl)]
-	private static extern int benchmark_radix(uint iterations);
 }

@@ -7,11 +7,23 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="537c07c1-450a-462a-a965-f2074b0e9fbc" name="Changes" comment="" />
+    <list default="true" id="537c07c1-450a-462a-a965-f2074b0e9fbc" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/../.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/../.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.NET_project/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.NET_project/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Benchmarks.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Benchmarks.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../unity_project/.idea/.idea.unity_project/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../unity_project/.idea/.idea.unity_project/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../unity_project/Assets/Scripts/Benchmarks.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../unity_project/Assets/Scripts/Benchmarks.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../unity_project/Packages/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/../unity_project/Packages/manifest.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../unity_project/Packages/packages-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/../unity_project/Packages/packages-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../unity_project/ProjectSettings/ProjectVersion.txt" beforeDir="false" afterPath="$PROJECT_DIR$/../unity_project/ProjectSettings/ProjectVersion.txt" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -19,6 +31,9 @@
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="SWEA" />
   </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 8
+}</component>
   <component name="ProjectId" id="2GIp3Pac82vrzPt0aLrToN6Dila" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -26,14 +41,24 @@
   </component>
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
+    &quot;.NET Project.NET_project.executor&quot;: &quot;Run&quot;,
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  },
+  &quot;keyToStringList&quot;: {
+    &quot;rider.external.source.directories&quot;: [
+      &quot;D:\\Users\\xavie\\AppData\\Roaming\\JetBrains\\Rider2023.3\\resharper-host\\DecompilerCache&quot;,
+      &quot;D:\\Users\\xavie\\AppData\\Roaming\\JetBrains\\Rider2023.3\\resharper-host\\SourcesCache&quot;,
+      &quot;D:\\Users\\xavie\\AppData\\Local\\Symbols\\src&quot;
+    ]
   }
 }</component>
   <component name="RunManager">

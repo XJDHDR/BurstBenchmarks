@@ -1,0 +1,6 @@
+brace_style = "AlwaysNextLine"
+control_brace_style = "AlwaysNextLine"
+empty_item_single_line = true
+force_multiline_blocks = true
+hard_tabs = true
+tab_spaces = 4
