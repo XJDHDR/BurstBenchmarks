@@ -10,10 +10,8 @@
     <list default="true" id="537c07c1-450a-462a-a965-f2074b0e9fbc" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.NET_project/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.NET_project/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Benchmarks.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Benchmarks.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ClangNativeBindings.cs" beforeDir="false" afterPath="$PROJECT_DIR$/NativeBindings/ClangNativeBindings.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/GccNativeBindings.cs" beforeDir="false" afterPath="$PROJECT_DIR$/NativeBindings/GccNativeBindings.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/MsNativeBindings.cs" beforeDir="false" afterPath="$PROJECT_DIR$/NativeBindings/MsNativeBindings.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/RustNativeBindings.cs" beforeDir="false" afterPath="$PROJECT_DIR$/NativeBindings/RustNativeBindings.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Benchmarks/Common.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Benchmarks/Common.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Benchmarks/PixarRaytracer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Benchmarks/PixarRaytracer.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -22,6 +20,9 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$USER_HOME$/AppData/Local/Symbols/src/dotnet/runtime/34a109148c7d8a2c8e6431e83e4bce5712dd8083/src/libraries/System.Private.CoreLib/src/System/Numerics/Vector3.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
