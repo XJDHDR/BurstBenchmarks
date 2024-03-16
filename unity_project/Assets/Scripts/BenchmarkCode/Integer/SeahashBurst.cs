@@ -6,7 +6,8 @@ using Unity.Jobs;
 
 namespace BenchmarkCode.Integer
 {
-	public struct SeahashUnity : IJob
+	[BurstCompile(CompileSynchronously = true)]
+	public struct SeahashBurst : IJob
 	{
 		public uint iterations;
 		public ulong result;
@@ -20,7 +21,7 @@ namespace BenchmarkCode.Integer
 		{
 			const int bufferLength = 1024 * 128;
 
-			byte[] buffer = new byte[bufferLength];
+			NativeArray<byte> buffer = new NativeArray<byte>(bufferLength, Allocator.Persistent);
 
 			for (int i = 0; i < bufferLength; i++) {
 				buffer[i] = (byte)(i % 256);
@@ -32,6 +33,8 @@ namespace BenchmarkCode.Integer
 			{
 				hash = Compute(buffer, bufferLength, 0x16F11FE89B0D677C, 0xB480A793D8E6C86C, 0x6FE2E5AAF078EBC9, 0x14F994A4C5259381);
 			}
+
+			buffer.Dispose();
 
 			return hash;
 		}
@@ -46,13 +49,13 @@ namespace BenchmarkCode.Integer
 			return value;
 		}
 
-		private ulong Compute(byte[] buffer, ulong length, ulong a, ulong b, ulong c, ulong d)
+		private ulong Compute(NativeArray<byte> buffer, ulong length, ulong a, ulong b, ulong c, ulong d)
 		{
-			const uint blockSize = 32;
+			const int blockSize = 32;
 
-			ulong end = length & ~(blockSize - 1);
+			ulong end = length & ~((uint)blockSize - 1);
 
-			for (uint i = 0; i < end; i += blockSize)
+			for (int i = 0; (ulong)i < end; i += blockSize)
 			{
 				a ^= buffer[i];
 				b ^= buffer[i + 8];
@@ -100,17 +103,6 @@ namespace BenchmarkCode.Integer
 			a ^= length;
 
 			return Diffuse(a);
-		}
-	}
-
-	internal struct SeahashGCC : IJob
-	{
-		public uint iterations;
-		public ulong result;
-
-		public void Execute()
-		{
-			result = NativeBindings.benchmark_seahash(iterations);
 		}
 	}
 }

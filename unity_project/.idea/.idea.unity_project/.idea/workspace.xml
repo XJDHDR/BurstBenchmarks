@@ -5,8 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a7d747bc-3dfe-474b-8308-8b76a452b618" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/.idea.unity_project/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.unity_project/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.unity_project/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../NET_project/.idea/.idea.NET_project/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../NET_project/.idea/.idea.NET_project/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../NET_project/Benchmarks/Radix.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../NET_project/Benchmarks/Radix.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../NET_project/Benchmarks/Seahash.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../NET_project/Benchmarks/Seahash.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/BenchmarkCode/Double/NBody.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/BenchmarkCode/Double/NBody.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/BenchmarkCode/Integer/Radix.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/BenchmarkCode/Integer/Radix.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/BenchmarkCode/Integer/Seahash.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/BenchmarkCode/Integer/Seahash.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/BenchmarkCode/Integer/SieveOfEratosthenes.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/BenchmarkCode/Integer/SieveOfEratosthenes.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/BenchmarkCode/Single/FirefliesFlocking.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/BenchmarkCode/Single/FirefliesFlocking.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/BenchmarkCode/Single/ParticleKinematics.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/BenchmarkCode/Single/ParticleKinematics.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/BenchmarkCode/Single/PixarRaytracer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/BenchmarkCode/Single/PixarRaytracer.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Assets/Scripts/Benchmarks.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Benchmarks.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -16,6 +24,11 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/2a3b1fc140ae44e9a4476e34a2a2972615b000/de/3a8916d0/Vector3.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.mathematics@1.2.6/Unity.Mathematics/float3.gen.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/Library/PackageCache/com.unity.mathematics@1.2.6/Unity.Mathematics/math.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -43,7 +56,7 @@
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "settings.editor.selected.configurable": "editor.preferences.smartKeys_rider",
     "vue.rearranger.settings.migration": "true"
   },
   "keyToStringList": {

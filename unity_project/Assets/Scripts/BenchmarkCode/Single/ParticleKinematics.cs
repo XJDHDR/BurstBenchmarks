@@ -10,8 +10,7 @@ namespace BenchmarkCode.Single
 		public float x, y, z, vx, vy, vz;
 	}
 
-	[BurstCompile(FloatPrecision.Standard, FloatMode.Fast, CompileSynchronously = true)]
-	public unsafe struct ParticleKinematicsBurst : IJob
+	public unsafe struct ParticleKinematicsUnity : IJob
 	{
 		public uint quantity;
 		public uint iterations;
@@ -24,7 +23,7 @@ namespace BenchmarkCode.Single
 
 		private float ParticleKinematics(uint quantity, uint iterations)
 		{
-			Particle* particles = (Particle*)UnsafeUtility.Malloc(quantity * sizeof(Particle), 16, Allocator.Persistent);
+			Particle[] particles = new Particle[quantity];
 
 			for (uint i = 0; i < quantity; ++i)
 			{
@@ -40,23 +39,20 @@ namespace BenchmarkCode.Single
 			{
 				for (uint b = 0, c = quantity; b < c; ++b)
 				{
-					Particle* p = &particles[b];
+					Particle p = particles[b];
 
-					p->x += p->vx;
-					p->y += p->vy;
-					p->z += p->vz;
+					p.x += p.vx;
+					p.y += p.vy;
+					p.z += p.vz;
 				}
 			}
 
 			Particle particle = new Particle { x = particles[0].x, y = particles[0].y, z = particles[0].z };
 
-			UnsafeUtility.Free(particles, Allocator.Persistent);
-
 			return particle.x + particle.y + particle.z;
 		}
 	}
 
-	[BurstCompile(FloatPrecision.Standard, FloatMode.Fast, CompileSynchronously = true)]
 	internal struct ParticleKinematicsGCC : IJob
 	{
 		public uint quantity;

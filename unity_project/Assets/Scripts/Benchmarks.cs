@@ -303,7 +303,7 @@ public partial class Benchmarks : SystemBase {
 			}
 
 			if (scriptBackendEnabled && pixarRaytracerEnabled) {
-				var benchmark = new PixarRaytracerBurst {
+				var benchmark = new PixarRaytracerUnity {
 					width = 720,
 					height = 480,
 					samples = pixarRaytracerSamples
@@ -355,7 +355,7 @@ public partial class Benchmarks : SystemBase {
 			}
 
 			if (scriptBackendEnabled && firefliesFlockingEnabled) {
-				var benchmark = new FirefliesFlockingBurst {
+				var benchmark = new FirefliesFlockingUnity {
 					boids = 1000,
 					lifetime = firefliesFlockingLifetime
 				};
@@ -454,7 +454,7 @@ public partial class Benchmarks : SystemBase {
 			}
 
 			if (scriptBackendEnabled && particleKinematicsEnabled) {
-				var benchmark = new ParticleKinematicsBurst {
+				var benchmark = new ParticleKinematicsUnity {
 					quantity = 1000,
 					iterations = particleKinematicsIterations
 				};
@@ -551,7 +551,7 @@ public partial class Benchmarks : SystemBase {
 			}
 
 			if (scriptBackendEnabled && seahashEnabled) {
-				var benchmark = new SeahashBurst {
+				var benchmark = new SeahashUnity {
 					iterations = seahashIterations
 				};
 
@@ -599,7 +599,7 @@ public partial class Benchmarks : SystemBase {
 			}
 
 			if (scriptBackendEnabled && radixEnabled) {
-				var benchmark = new RadixBurst {
+				var benchmark = new RadixUnity {
 					iterations = radixIterations
 				};
 

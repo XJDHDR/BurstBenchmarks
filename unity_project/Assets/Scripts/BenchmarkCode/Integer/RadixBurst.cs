@@ -7,7 +7,8 @@ using Unity.Jobs;
 
 namespace BenchmarkCode.Integer
 {
-	public unsafe struct RadixUnity : IJob
+	[BurstCompile(CompileSynchronously = true)]
+	public unsafe struct RadixBurst : IJob
 	{
 		public uint iterations;
 		public int result;
@@ -25,7 +26,7 @@ namespace BenchmarkCode.Integer
 
 			const int arrayLength = 128;
 
-			int[] array = new int[arrayLength];
+			NativeArray<int> array = new NativeArray<int>(arrayLength, Allocator.Persistent);
 
 			for (uint a = 0; a < iterations; a++) {
 				for (int b = 0; b < arrayLength; b++) {
@@ -36,6 +37,8 @@ namespace BenchmarkCode.Integer
 			}
 
 			int head = array[0];
+
+			array.Dispose();
 
 			return head;
 		}
@@ -49,7 +52,7 @@ namespace BenchmarkCode.Integer
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private int FindLargest(int[] array, int length)
+		private int FindLargest(NativeArray<int> array, int length)
 		{
 			int i;
 			int largest = -1;
@@ -63,7 +66,7 @@ namespace BenchmarkCode.Integer
 			return largest;
 		}
 
-		private void Sort(int[] array, int length)
+		private void Sort(NativeArray<int> array, int length)
 		{
 			int i;
 			Span<int> semiSorted = stackalloc int[length];
@@ -102,17 +105,6 @@ namespace BenchmarkCode.Integer
 				significantDigit *= 10;
 				return significantDigit;
 			}
-		}
-	}
-
-	internal struct RadixGCC : IJob
-	{
-		public uint iterations;
-		public int result;
-
-		public void Execute()
-		{
-			result = NativeBindings.benchmark_radix(iterations);
 		}
 	}
 }

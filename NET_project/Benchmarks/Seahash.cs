@@ -6,7 +6,8 @@ public unsafe struct SeahashNET : IJob {
 	public uint iterations;
 	public ulong result;
 
-	public void Run() {
+	public void Run()
+	{
 		result = Seahash(iterations);
 	}
 
@@ -41,7 +42,8 @@ public unsafe struct SeahashNET : IJob {
 		return value;
 	}
 
-	private ulong Compute(byte[] buffer, ulong length, ulong a, ulong b, ulong c, ulong d) {
+	private ulong Compute(byte[] buffer, ulong length, ulong a, ulong b, ulong c, ulong d)
+	{
 		const uint blockSize = 32;
 
 		ulong end = length & ~(blockSize - 1);
@@ -96,12 +98,14 @@ public unsafe struct SeahashNET : IJob {
 	}
 }
 
-internal unsafe struct SeahashGCC : IJob {
+internal unsafe struct SeahashGCC : IJob
+{
 	public uint iterations;
 	public ulong result;
 	public string libName;
 
-	public void Run() {
+	public void Run()
+	{
 		switch (libName)
 		{
 			case "GCC":

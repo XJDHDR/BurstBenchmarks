@@ -1,8 +1,8 @@
-﻿using System.Numerics;
+﻿using System;
 using System.Runtime.CompilerServices;
 using Unity.Burst;
 using Unity.Jobs;
-using Unity.Mathematics;
+using UnityEngine;
 
 namespace BenchmarkCode.Single
 {
@@ -14,8 +14,7 @@ namespace BenchmarkCode.Single
 		Sun = 3
 	}
 
-	[BurstCompile(FloatPrecision.Standard, FloatMode.Fast, CompileSynchronously = true)]
-	public unsafe struct PixarRaytracerBurst : IJob
+	public unsafe struct PixarRaytracerUnity : IJob
 	{
 		public uint width;
 		public uint height;
@@ -34,18 +33,18 @@ namespace BenchmarkCode.Single
 			marsagliaZ = 666;
 			marsagliaW = 999;
 
-			Vector position = new Vector { x = -22.0f, y = 5.0f, z = 25.0f };
-			Vector goal = new Vector { x = -3.0f, y = 4.0f, z = 0.0f };
+			Vector3 position = new Vector3 { x = -22.0f, y = 5.0f, z = 25.0f };
+			Vector3 goal = new Vector3 { x = -3.0f, y = 4.0f, z = 0.0f };
 
-			goal = Add(Inverse(goal), MultiplyFloat(position, -1.0f));
+			goal = Vector3.Normalize(goal) + (position * -1.0f);
 
-			Vector left = new Vector { x = goal.z, y = 0, z = goal.x };
+			Vector3 left = new Vector3 { x = goal.z, y = 0, z = goal.x };
 
-			left = MultiplyFloat(Inverse(left), 1.0f / width);
+			left = Vector3.Normalize(left) * (1.0f / width);
 
-			Vector up = Cross(goal, left);
-			Vector color = default(Vector);
-			Vector adjust = default(Vector);
+			Vector3 up = Vector3.Cross(goal, left);
+			Vector3 color = default(Vector3);
+			Vector3 adjust = default(Vector3);
 
 			for (uint y = height; y > 0; y--)
 			{
@@ -53,68 +52,56 @@ namespace BenchmarkCode.Single
 				{
 					for (uint p = samples; p > 0; p--)
 					{
-						color = Add(color, Trace(position, Add(Inverse(MultiplyFloat(Add(goal, left), x - width / 2 + Random())), MultiplyFloat(up, y - height / 2 + Random()))));
+						color += Trace(
+							position,
+							Vector3.Normalize(
+								((goal + left) * (x - (float)width / 2 + Random()))
+							) + (up * (y - (float)height / 2 + Random()))
+						);
 					}
 
-					color = MultiplyFloat(color, (1.0f / samples) + 14.0f / 241.0f);
+					color *= ((1.0f / samples) + 14.0f / 241.0f);
 					adjust = AddFloat(color, 1.0f);
-					color = new Vector {
+					color = new Vector3 {
 						x = color.x / adjust.x,
 						y = color.y / adjust.y,
 						z = color.z / adjust.z
 					};
 
-					color = MultiplyFloat(color, 255.0f);
+					color *= 255.0f;
 				}
 			}
 
 			return color.x + color.y + color.z;
 		}
 
+		/// <summary>
+		/// Multiples the components of two vector3s together.
+		/// DO NOT DELETE! Unity doesn't have an operator for multiplying two Vector3 structs together:
+		/// https://docs.unity3d.com/ScriptReference/Vector3-operator_multiply.html
+		/// </summary>
+		/// <param name="left">First Vector3</param>
+		/// <param name="right">Second Vector3</param>
+		/// <returns>Vector3 consisting of the components multiplied together.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private Vector Multiply(Vector left, Vector right) {
+		private Vector3 Multiply(Vector3 left, Vector3 right) {
 			left.x *= right.x;
 			left.y *= right.y;
 			left.z *= right.z;
-
+			
 			return left;
 		}
 
+		/// <summary>
+		/// Increases the components of a vector3 by a given amount.
+		/// DO NOT DELETE! Unity doesn't have an operator for doing this:
+		/// https://docs.unity3d.com/ScriptReference/Vector3-operator_add.html
+		/// </summary>
+		/// <param name="vector">Source Vector3</param>
+		/// <param name="value">Magnitude to add to Vector's components.</param>
+		/// <returns>Vector3 consisting of the modified components.</returns>
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private Vector MultiplyFloat(Vector vector, float value) {
-			vector.x *= value;
-			vector.y *= value;
-			vector.z *= value;
-
-			return vector;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private float Modulus(Vector left, Vector right) {
-			return left.x * right.x + left.y * right.y + left.z * right.z;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private float ModulusSelf(Vector vector) {
-			return vector.x * vector.x + vector.y * vector.y + vector.z * vector.z;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private Vector Inverse(Vector vector) {
-			return MultiplyFloat(vector, 1 / math.sqrt(ModulusSelf(vector)));
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private Vector Add(Vector left, Vector right) {
-			left.x += right.x;
-			left.y += right.y;
-			left.z += right.z;
-
-			return left;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private Vector AddFloat(Vector vector, float value) {
+		private Vector3 AddFloat(Vector3 vector, float value) {
 			vector.x += value;
 			vector.y += value;
 			vector.z += value;
@@ -123,28 +110,12 @@ namespace BenchmarkCode.Single
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private Vector Cross(Vector to, Vector from) {
-			Vector vector = default(Vector);
-
-			vector.x = to.y * from.z - to.z * from.y;
-			vector.y = to.z * from.x - to.x * from.z;
-			vector.z = to.x * from.y - to.y * from.x;
-
-			return vector;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private float Min(float left, float right) {
-			return left < right ? left : right;
-		}
-
-		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private float BoxTest(Vector position, Vector lowerLeft, Vector upperRight)
+		private float BoxTest(Vector3 position, Vector3 lowerLeft, Vector3 upperRight)
 		{
-			lowerLeft = MultiplyFloat(Add(position, lowerLeft), -1);
-			upperRight = MultiplyFloat(Add(upperRight, position), -1);
-
-			return -Min(Min(Min(lowerLeft.x, upperRight.x), Min(lowerLeft.y, upperRight.y)), Min(lowerLeft.z, upperRight.z));
+			lowerLeft = (position + lowerLeft) * -1;
+			upperRight = (upperRight + position) * -1;
+			
+			return -Mathf.Min(Mathf.Min(Mathf.Min(lowerLeft.x, upperRight.x), Mathf.Min(lowerLeft.y, upperRight.y)), Mathf.Min(lowerLeft.z, upperRight.z));
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -156,13 +127,13 @@ namespace BenchmarkCode.Single
 			return ((marsagliaZ << 16) + marsagliaW) * 2.0f / 10000000000.0f;
 		}
 
-		private float Sample(Vector position, int* hitType)
+		private float Sample(Vector3 position, ref int hitType)
 		{
 			const int size = 60;
 
 			float distance = 1e9f;
-			Vector f = position;
-			byte* letters = stackalloc byte[size];
+			Vector3 f = position;
+			Span<byte> letters = stackalloc byte[size];
 
 			// P              // I              // X              // A              // R
 			letters[0]  = 53; letters[12] = 65; letters[24] = 73; letters[32] = 85; letters[44] = 97; letters[56] = 99;
@@ -182,28 +153,39 @@ namespace BenchmarkCode.Single
 
 			for (int i = 0; i < size; i += 4)
 			{
-				Vector begin = MultiplyFloat(new Vector { x = letters[i] - 79.0f, y = letters[i + 1] - 79.0f, z = 0.0f }, 0.5f);
-				Vector e = Add(MultiplyFloat(new Vector { x = letters[i + 2] - 79.0f, y = letters[i + 3] - 79.0f, z = 0.0f }, 0.5f), MultiplyFloat(begin, -1.0f));
-				Vector o = MultiplyFloat(Add(f, MultiplyFloat(Add(begin, e), Min(-Min(Modulus(MultiplyFloat(Add(begin, f), -1.0f), e) / ModulusSelf(e), 0.0f), 1.0f))), -1.0f);
+				Vector3 begin = new Vector3 { x = letters[i] - 79.0f, y = letters[i + 1] - 79.0f, z = 0.0f } * 0.5f;
+				Vector3 e = (new Vector3 { x = letters[i + 2] - 79.0f, y = letters[i + 3] - 79.0f, z = 0.0f } * 0.5f) + (begin * -1.0f);
+				Vector3 o = (f + (
+					(begin + e) * Mathf.Min(
+						-Mathf.Min(
+							Vector3.Dot(
+								((begin + f) * -1.0f),
+								e
+							) / Vector3.Dot(e, e),
+							0.0f
+						),
+						1.0f
+					)
+				) * -1.0f);
 
-				distance = Min(distance, ModulusSelf(o));
+				distance = Mathf.Min(distance, Vector3.Dot(o, o));
 			}
 
-			distance = math.sqrt(distance);
+			distance = Mathf.Sqrt(distance);
 
-			Vector* curves = stackalloc Vector[2];
+			Span<Vector3> curves = stackalloc Vector3[2];
 
-			curves[0] = new Vector { x = -11.0f, y = 6.0f, z = 0.0f };
-			curves[1] = new Vector { x = 11.0f, y = 6.0f, z = 0.0f };
+			curves[0] = new Vector3 { x = -11.0f, y = 6.0f, z = 0.0f };
+			curves[1] = new Vector3 { x = 11.0f, y = 6.0f, z = 0.0f };
 
 			for (int i = 1; i >= 0; i--)
 			{
-				Vector o = Add(f, MultiplyFloat(curves[i], -1.0f));
+				Vector3 o = f + (curves[i] * -1.0f);
 				float m = 0.0f;
 
 				if (o.x > 0.0f)
 				{
-					m = math.abs(math.sqrt(ModulusSelf(o)) - 2.0f);
+					m = Mathf.Abs(Mathf.Sqrt(Vector3.Dot(o, o)) - 2.0f);
 				}
 				else
 				{
@@ -212,21 +194,31 @@ namespace BenchmarkCode.Single
 					else
 						o.y += 2.0f;
 
-					o.y += math.sqrt(ModulusSelf(o));
+					o.y += Mathf.Sqrt(Vector3.Dot(o, o));
 				}
 
-				distance = Min(distance, m);
+				distance = Mathf.Min(distance, m);
 			}
 
-			distance = math.pow(math.pow(distance, 8.0f) + math.pow(position.z, 8.0f), 0.125f) - 0.5f;
-			*hitType = (int)PixarRayHit.Letter;
+			distance = Mathf.Pow(Mathf.Pow(distance, 8.0f) + Mathf.Pow(position.z, 8.0f), 0.125f) - 0.5f;
+			hitType = (int)PixarRayHit.Letter;
 
-			float roomDistance = Min(-Min(BoxTest(position, new Vector { x = -30.0f, y = -0.5f, z = -30.0f }, new Vector { x = 30.0f, y = 18.0f, z = 30.0f }), BoxTest(position, new Vector { x = -25.0f, y = -17.5f, z = -25.0f }, new Vector { x = 25.0f, y = 20.0f, z = 25.0f })), BoxTest( new Vector { x = math.fmod(math.abs(position.x), 8), y = position.y, z = position.z }, new Vector { x = 1.5f, y = 18.5f, z = -25.0f }, new Vector { x = 6.5f, y = 20.0f, z = 25.0f }));
+			float roomDistance = Mathf.Min(
+				-Mathf.Min(
+					BoxTest(position, new Vector3 { x = -30.0f, y = -0.5f, z = -30.0f }, new Vector3 { x = 30.0f, y = 18.0f, z = 30.0f }),
+					BoxTest(position, new Vector3 { x = -25.0f, y = -17.5f, z = -25.0f }, new Vector3 { x = 25.0f, y = 20.0f, z = 25.0f })
+				),
+				BoxTest(
+					new Vector3 { x = Mathf.Abs(position.x) % 8, y = position.y, z = position.z },
+					new Vector3 { x = 1.5f, y = 18.5f, z = -25.0f },
+					new Vector3 { x = 6.5f, y = 20.0f, z = 25.0f }
+				)
+			);
 
 			if (roomDistance < distance)
 			{
 				distance = roomDistance;
-				*hitType = (int)PixarRayHit.Wall;
+				hitType = (int)PixarRayHit.Wall;
 			}
 
 			float sun = 19.9f - position.y;
@@ -234,13 +226,13 @@ namespace BenchmarkCode.Single
 			if (sun < distance)
 			{
 				distance = sun;
-				*hitType = (int)PixarRayHit.Sun;
+				hitType = (int)PixarRayHit.Sun;
 			}
 
 			return distance;
 		}
 
-		private int RayMarching(Vector origin, Vector direction, Vector* hitPosition, Vector* hitNormal)
+		private int RayMarching(Vector3 origin, Vector3 direction, ref Vector3 hitPosition, ref Vector3 hitNormal)
 		{
 			int hitType = (int)PixarRayHit.None;
 			int noHitCount = 0;
@@ -248,12 +240,19 @@ namespace BenchmarkCode.Single
 
 			for (float i = 0; i < 100; i += distance)
 			{
-				*hitPosition = MultiplyFloat(Add(origin, direction), i);
-				distance = Sample(*hitPosition, &hitType);
+				hitPosition = (origin + direction) * i;
+				distance = Sample(hitPosition, ref hitType);
 
 				if (distance < 0.01f || ++noHitCount > 99)
 				{
-					*hitNormal = Inverse(new Vector { x = Sample(Add(*hitPosition, new Vector { x = 0.01f, y = 0.0f, z = 0.0f }), &noHitCount) - distance, y = Sample(Add(*hitPosition, new Vector { x = 0.0f, y = 0.01f, z = 0.0f }), &noHitCount) - distance, z = Sample(Add(*hitPosition, new Vector { x = 0.0f, y = 0.0f, z = 0.01f }), &noHitCount) - distance });
+					hitNormal = Vector3.Normalize(
+						new Vector3
+						{
+							x = Sample((hitPosition + new Vector3 { x = 0.01f, y = 0.0f, z = 0.0f }), ref noHitCount) - distance,
+							y = Sample((hitPosition + new Vector3 { x = 0.0f, y = 0.01f, z = 0.0f }), ref noHitCount) - distance,
+							z = Sample((hitPosition + new Vector3 { x = 0.0f, y = 0.0f, z = 0.01f }), ref noHitCount) - distance
+						}
+					);
 
 					return hitType;
 				}
@@ -262,17 +261,17 @@ namespace BenchmarkCode.Single
 			return (int)PixarRayHit.None;
 		}
 
-		private Vector Trace(Vector origin, Vector direction) {
-			Vector
-				sampledPosition = new Vector { x = 1.0f, y = 1.0f, z = 1.0f },
-				normal = new Vector { x = 1.0f, y = 1.0f, z = 1.0f },
-				color = new Vector { x = 1.0f, y = 1.0f, z = 1.0f },
-				attenuation = new Vector { x = 1.0f, y = 1.0f, z = 1.0f },
-				lightDirection = Inverse(new Vector { x = 0.6f, y = 0.6f, z = 1.0f });
+		private Vector3 Trace(Vector3 origin, Vector3 direction) {
+			Vector3
+				sampledPosition = new() { x = 1.0f, y = 1.0f, z = 1.0f },
+				normal = new() { x = 1.0f, y = 1.0f, z = 1.0f },
+				color = new() { x = 1.0f, y = 1.0f, z = 1.0f },
+				attenuation = new() { x = 1.0f, y = 1.0f, z = 1.0f },
+				lightDirection = Vector3.Normalize(new Vector3 { x = 0.6f, y = 0.6f, z = 1.0f });
 
 			for (int bounce = 3; bounce > 0; bounce--)
 			{
-				PixarRayHit hitType = (PixarRayHit)RayMarching(origin, direction, &sampledPosition, &normal);
+				PixarRayHit hitType = (PixarRayHit)RayMarching(origin, direction, ref sampledPosition, ref normal);
 
 				switch (hitType)
 				{
@@ -281,9 +280,9 @@ namespace BenchmarkCode.Single
 
 					case PixarRayHit.Letter:
 					{
-						direction = MultiplyFloat(Add(direction, normal), Modulus(normal, direction) * -2.0f);
-						origin = MultiplyFloat(Add(sampledPosition, direction), 0.1f);
-						attenuation = MultiplyFloat(attenuation, 0.2f);
+						direction = (direction + normal) * (Vector3.Dot(normal, direction) * -2.0f);
+						origin = (sampledPosition + direction) * 0.1f;
+						attenuation *= 0.2f;
 
 						break;
 					}
@@ -291,27 +290,45 @@ namespace BenchmarkCode.Single
 					case PixarRayHit.Wall:
 					{
 						float
-							incidence = Modulus(normal, lightDirection),
+							incidence = Vector3.Dot(normal, lightDirection),
 							p = 6.283185f * Random(),
 							c = Random(),
-							s = math.sqrt(1.0f - c),
+							s = Mathf.Sqrt(1.0f - c),
 							g = normal.z < 0 ? -1.0f : 1.0f,
 							u = -1.0f / (g + normal.z),
 							v = normal.x * normal.y * u;
 
-						direction = Add(Add(new Vector { x = v, y = g + normal.y * normal.y * u, z = -normal.y * (math.cos(p) * s) }, new Vector { x = 1.0f + g * normal.x * normal.x * u, y = g * v, z = -g * normal.x }), MultiplyFloat(normal, math.sqrt(c)));
-						origin = MultiplyFloat(Add(sampledPosition, direction), 0.1f);
-						attenuation = MultiplyFloat(attenuation, 0.2f);
+						direction = (
+							(
+								new Vector3 { x = v, y = g + normal.y * normal.y * u, z = -normal.y * (Mathf.Cos(p) * s) } +
+								new Vector3 { x = 1.0f + g * normal.x * normal.x * u, y = g * v, z = -g * normal.x }
+							) + (normal * Mathf.Sqrt(c))
+						);
+						origin = (sampledPosition + direction) * 0.1f;
+						attenuation *= 0.2f;
 
-						if (incidence > 0 && RayMarching(MultiplyFloat(Add(sampledPosition, normal), 0.1f), lightDirection, &sampledPosition, &normal) == (int)PixarRayHit.Sun)
-							color = MultiplyFloat(Multiply(Add(color, attenuation), new Vector { x = 500.0f, y = 400.0f, z = 100.0f }), incidence);
+						if (
+							incidence > 0 &&
+							RayMarching(
+								(sampledPosition + normal) * 0.1f,
+								lightDirection,
+								ref sampledPosition,
+								ref normal
+							) == (int)PixarRayHit.Sun
+						)
+						{
+							color = Multiply(
+								(color + attenuation),
+								new Vector3 { x = 500.0f, y = 400.0f, z = 100.0f }
+							) * incidence;
+						}
 
 						break;
 					}
 
 					case PixarRayHit.Sun:
 					{
-						color = Multiply(Add(color, attenuation), new Vector { x = 50.0f, y = 80.0f, z = 100.0f });
+						color = Multiply((color + attenuation), new Vector3 { x = 50.0f, y = 80.0f, z = 100.0f });
 
 						goto escape;
 					}
@@ -324,8 +341,7 @@ namespace BenchmarkCode.Single
 		}
 	}
 
-	[BurstCompile(FloatPrecision.Standard, FloatMode.Fast, CompileSynchronously = true)]
-	internal unsafe struct PixarRaytracerGCC : IJob
+	internal struct PixarRaytracerGCC : IJob
 	{
 		public uint width;
 		public uint height;

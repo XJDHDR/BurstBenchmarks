@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 using Unity.Burst;
 using Unity.Jobs;
 using Unity.Mathematics;
@@ -23,24 +24,23 @@ namespace BenchmarkCode.Double
 
 		private double NBody(uint advancements)
 		{
-			NBody* sun = stackalloc NBody[5];
-			NBody* end = sun + 4;
+			Span<NBody> sun = stackalloc NBody[5];
 
-			InitializeBodies(sun, end);
-			Energy(sun, end);
+			InitializeBodies(sun);
+			Energy(sun);
 
 			while (--advancements > 0)
 			{
-				Advance(sun, end, 0.01);
+				Advance(sun, 0.01);
 			}
 
-			Energy(sun, end);
+			Energy(sun);
 
 			return sun[0].x + sun[0].y;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private void InitializeBodies(NBody* sun, NBody* end)
+		private void InitializeBodies(Span<NBody> sun)
 		{
 			const double pi = 3.141592653589793;
 			const double solarMass = 4 * pi * pi;
@@ -90,49 +90,49 @@ namespace BenchmarkCode.Double
 
 				double vx = 0, vy = 0, vz = 0;
 
-				for (NBody* planet = sun + 1; planet <= end; ++planet)
+				for (int i = 1; i <= sun.Length; ++i)
 				{
-					double mass = planet->mass;
+					double mass = sun[i].mass;
 
-					vx += planet->vx * mass;
-					vy += planet->vy * mass;
-					vz += planet->vz * mass;
+					vx += sun[i].vx * mass;
+					vy += sun[i].vy * mass;
+					vz += sun[i].vz * mass;
 				}
 
-				sun->mass = solarMass;
-				sun->vx = vx / -solarMass;
-				sun->vy = vy / -solarMass;
-				sun->vz = vz / -solarMass;
+				sun[0].mass = solarMass;
+				sun[0].vx = vx / -solarMass;
+				sun[0].vy = vy / -solarMass;
+				sun[0].vz = vz / -solarMass;
 			}
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private void Energy(NBody* sun, NBody* end)
+		private void Energy(Span<NBody> sun)
 		{
 			unchecked
 			{
 				double e = 0.0;
 
-				for (NBody* bi = sun; bi <= end; ++bi)
+				for (int bi = 0; bi < sun.Length; ++bi)
 				{
 					double
-						imass = bi->mass,
-						ix = bi->x,
-						iy = bi->y,
-						iz = bi->z,
-						ivx = bi->vx,
-						ivy = bi->vy,
-						ivz = bi->vz;
+						imass = sun[bi].mass,
+						ix = sun[bi].x,
+						iy = sun[bi].y,
+						iz = sun[bi].z,
+						ivx = sun[bi].vx,
+						ivy = sun[bi].vy,
+						ivz = sun[bi].vz;
 
 					e += 0.5 * imass * (ivx * ivx + ivy * ivy + ivz * ivz);
 
-					for (NBody* bj = bi + 1; bj <= end; ++bj)
+					for (int bj = bi + 1; bj < sun.Length; ++bj)
 					{
 						double
-							jmass = bj->mass,
-							dx = ix - bj->x,
-							dy = iy - bj->y,
-							dz = iz - bj->z;
+							jmass = sun[bj].mass,
+							dx = ix - sun[bj].x,
+							dy = iy - sun[bj].y,
+							dz = iz - sun[bj].z;
 
 						e -= imass * jmass / math.sqrt(dx * dx + dy * dy + dz * dz);
 					}
@@ -149,49 +149,49 @@ namespace BenchmarkCode.Double
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]
-		private void Advance(NBody* sun, NBody* end, double distance)
+		private void Advance(Span<NBody> sun, double distance)
 		{
 			unchecked
 			{
-				for (NBody* bi = sun; bi < end; ++bi)
+				for (int bi = 0; bi < (sun.Length - 1); ++bi)
 				{
 					double
-						ix = bi->x,
-						iy = bi->y,
-						iz = bi->z,
-						ivx = bi->vx,
-						ivy = bi->vy,
-						ivz = bi->vz,
-						imass = bi->mass;
+						ix = sun[bi].x,
+						iy = sun[bi].y,
+						iz = sun[bi].z,
+						ivx = sun[bi].vx,
+						ivy = sun[bi].vy,
+						ivz = sun[bi].vz,
+						imass = sun[bi].mass;
 
-					for (NBody* bj = bi + 1; bj <= end; ++bj)
+					for (int bj = bi + 1; bj < sun.Length; ++bj)
 					{
 						double
-							dx = bj->x - ix,
-							dy = bj->y - iy,
-							dz = bj->z - iz,
-							jmass = bj->mass,
+							dx = sun[bj].x - ix,
+							dy = sun[bj].y - iy,
+							dz = sun[bj].z - iz,
+							jmass = sun[bj].mass,
 							mag = distance / GetD2(dx, dy, dz);
 
-						bj->vx = bj->vx - dx * imass * mag;
-						bj->vy = bj->vy - dy * imass * mag;
-						bj->vz = bj->vz - dz * imass * mag;
-						ivx = ivx + dx * jmass * mag;
-						ivy = ivy + dy * jmass * mag;
-						ivz = ivz + dz * jmass * mag;
+						sun[bj].vx -= dx * imass * mag;
+						sun[bj].vy -= dy * imass * mag;
+						sun[bj].vz -= dz * imass * mag;
+						ivx += dx * jmass * mag;
+						ivy += dy * jmass * mag;
+						ivz += dz * jmass * mag;
 					}
 
-					bi->vx = ivx;
-					bi->vy = ivy;
-					bi->vz = ivz;
-					bi->x = ix + ivx * distance;
-					bi->y = iy + ivy * distance;
-					bi->z = iz + ivz * distance;
+					sun[bi].vx = ivx;
+					sun[bi].vy = ivy;
+					sun[bi].vz = ivz;
+					sun[bi].x = ix + ivx * distance;
+					sun[bi].y = iy + ivy * distance;
+					sun[bi].z = iz + ivz * distance;
 				}
 
-				end->x = end->x + end->vx * distance;
-				end->y = end->y + end->vy * distance;
-				end->z = end->z + end->vz * distance;
+				sun[4].x += sun[4].vx * distance;
+				sun[4].y += sun[4].vy * distance;
+				sun[4].z += sun[4].vz * distance;
 			}
 		}
 	}

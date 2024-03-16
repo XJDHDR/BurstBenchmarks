@@ -1,4 +1,5 @@
-﻿using Unity.Burst;
+﻿using System;
+using Unity.Burst;
 using Unity.Jobs;
 
 namespace BenchmarkCode.Integer
@@ -17,8 +18,8 @@ namespace BenchmarkCode.Integer
 		{
 			const int size = 1024;
 
-			byte* flags = stackalloc byte[size];
-			uint a, b, c, prime, count = 0;
+			Span<byte> flags = stackalloc byte[size];
+			int a, b, c, prime, count = 0;
 
 			for (a = 1; a <= iterations; a++)
 			{
@@ -47,12 +48,12 @@ namespace BenchmarkCode.Integer
 				}
 			}
 
-			return count;
+			return (uint)count;
 		}
 	}
 
 	[BurstCompile(CompileSynchronously = true)]
-	internal unsafe struct SieveOfEratosthenesGCC : IJob
+	internal struct SieveOfEratosthenesGCC : IJob
 	{
 		public uint iterations;
 		public uint result;

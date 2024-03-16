@@ -68,9 +68,15 @@ public unsafe struct RadixNET : IJob
 		int significantDigit = 1;
 		int largest = FindLargest(array, length);
 
-		Span<int> bucket = stackalloc int[10];
 		while (largest / significantDigit > 0)
 		{
+			significantDigit = sortIteration(semiSorted);
+		}
+
+		int sortIteration(Span<int> semiSorted)
+		{
+			Span<int> bucket = stackalloc int[10];
+
 			for (i = 0; i < length; i++)
 			{
 				bucket[(array[i] / significantDigit) % 10]++;
@@ -92,6 +98,7 @@ public unsafe struct RadixNET : IJob
 			}
 
 			significantDigit *= 10;
+			return significantDigit;
 		}
 	}
 }
