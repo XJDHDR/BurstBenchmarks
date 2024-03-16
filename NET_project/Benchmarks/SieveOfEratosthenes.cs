@@ -1,5 +1,8 @@
-﻿namespace NET_project.Benchmarks;
+﻿using System.Runtime.CompilerServices;
 
+namespace NET_project.Benchmarks;
+
+[SkipLocalsInit]
 public unsafe struct SieveOfEratosthenesNET : IJob {
 	public uint iterations;
 	public uint result;
@@ -8,27 +11,21 @@ public unsafe struct SieveOfEratosthenesNET : IJob {
 		result = SieveOfEratosthenes(iterations);
 	}
 
-	private uint SieveOfEratosthenes(uint iterations) {
-		const int size = 1024;
+	private static uint SieveOfEratosthenes(uint iterations) {
+		Span<byte> flags = stackalloc byte[1024];
+		uint count = 0;
 
-		byte* flags = stackalloc byte[size];
-		uint a, b, c, prime, count = 0;
-
-		for (a = 1; a <= iterations; a++) {
+		for (uint a = 1; a <= iterations; a++) {
 			count = 0;
 
-			for (b = 0; b < size; b++) {
-				flags[b] = 1; // True
-			}
+			flags.Fill(1);
 
-			for (b = 0; b < size; b++) {
-				if (flags[b] == 1) {
-					prime = b + b + 3;
-					c = b + prime;
+			for (uint b = 0; b < flags.Length; b++) {
+				if (flags[(int)b] == 1) {
+					uint prime = b + b + 3;
 
-					while (c < size) {
-						flags[c] = 0; // False
-						c += prime;
+					for (uint c = b + prime; c < flags.Length; c += prime) {
+						flags[(int)c] = 0;
 					}
 
 					count++;
