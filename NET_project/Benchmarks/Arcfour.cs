@@ -1,43 +1,47 @@
 ﻿using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace NET_project.Benchmarks;
 
+[SkipLocalsInit]
 public unsafe struct ArcfourNET : IJob
 {
 	public uint iterations;
 	public int result;
 
-	public void Run()
-	{
+	public void Run() {
 		result = Arcfour(iterations);
 	}
 
-	private int Arcfour(uint iterations)
-	{
+	private static int Arcfour(uint iterations) {
 		const int keyLength = 5;
 		const int streamLength = 10;
 
-		byte[] state = new byte[256];
-		byte[] buffer = new byte[64];
-		Span<byte> key = stackalloc byte[keyLength];
-		Span<byte> stream = stackalloc byte[streamLength];
+		// Using span here would be more complex due to the general
+		// inability to prove that several accesses are safe due to
+		// the index being the value of another buffer i.e. x[y[n]]
 
-		key[0] = 0xDB;
-		key[1] = 0xB7;
-		key[2] = 0x60;
-		key[3] = 0xD4;
-		key[4] = 0x56;
-
-		stream[0] = 0xEB;
-		stream[1] = 0x9F;
-		stream[2] = 0x77;
-		stream[3] = 0x81;
-		stream[4] = 0xB7;
-		stream[5] = 0x34;
-		stream[6] = 0xCA;
-		stream[7] = 0x72;
-		stream[8] = 0xA7;
-		stream[9] = 0x19;
+		byte* state = (byte*)NativeMemory.AlignedAlloc(256, 8);
+		byte* buffer = (byte*)NativeMemory.AlignedAlloc(64, 8);
+		byte* key = stackalloc byte[keyLength] {
+			0xDB,
+			0xB7,
+			0x60,
+			0xD4,
+			0x56,
+		};
+		byte* stream = stackalloc byte[streamLength] {
+			0xEB,
+			0x9F,
+			0x77,
+			0x81,
+			0xB7,
+			0x34,
+			0xCA,
+			0x72,
+			0xA7,
+			0x19,
+		};
 
 		int idx = 0;
 
@@ -46,48 +50,47 @@ public unsafe struct ArcfourNET : IJob
 			idx = GenerateStream(state, buffer, streamLength);
 		}
 
+		NativeMemory.AlignedFree(state);
+		NativeMemory.AlignedFree(buffer);
+
 		return idx;
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	private int KeySetup(byte[] state, Span<byte> key, int length)
+	private static int KeySetup(byte* state, byte* key, int keyLength)
 	{
-		int i, j;
-		byte t;
-
-		for (i = 0; i < 256; ++i)
-		{
+		for (uint i = 0; i < 256; i++) {
 			state[i] = (byte)i;
 		}
 
-		for (i = 0, j = 0; i < 256; ++i)
-		{
-			j = (j + state[i] + key[i % length]) % 256;
-			t = state[i];
+		uint j = 0;
+
+		for (uint i = 0; i < 256; i++) {
+			j = (j + state[i] + key[i % keyLength]) % 256;
+			byte t = state[i];
 			state[i] = state[j];
 			state[j] = t;
 		}
 
-		return i;
+		return 256;
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	private int GenerateStream(byte[] state, byte[] buffer, int length)
+	private static int GenerateStream(byte* state, byte* buffer, int length)
 	{
-		int i, j;
-		int idx;
-		byte t;
+		uint i = 0;
+		uint j = 0;
 
-		for (idx = 0, i = 0, j = 0; idx < length; ++idx) {
+		for (int idx = 0; idx < length; idx++) {
 			i = (i + 1) % 256;
 			j = (j + state[i]) % 256;
-			t = state[i];
+			byte t = state[i];
 			state[i] = state[j];
 			state[j] = t;
 			buffer[idx] = state[(state[i] + state[j]) % 256];
 		}
 
-		return i;
+		return (int)i;
 	}
 }
 
