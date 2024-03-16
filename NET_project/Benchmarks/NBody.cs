@@ -31,9 +31,8 @@ public unsafe struct NBodyNET : IJob {
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	private void InitializeBodies(NBody* sun, NBody* end) {
-		const double pi = 3.141592653589793;
-		const double solarMass = 4 * pi * pi;
+	private static void InitializeBodies(NBody* sun, NBody* end) {
+		const double solarMass = 4 * double.Pi * double.Pi;
 		const double daysPerYear = 365.24;
 
 		unchecked {
@@ -79,7 +78,7 @@ public unsafe struct NBodyNET : IJob {
 
 			double vx = 0, vy = 0, vz = 0;
 
-			for (NBody* planet = sun + 1; planet <= end; ++planet) {
+			for (NBody* planet = sun + 1; planet <= end; planet++) {
 				double mass = planet->mass;
 
 				vx += planet->vx * mass;
@@ -95,83 +94,75 @@ public unsafe struct NBodyNET : IJob {
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	private void Energy(NBody* sun, NBody* end) {
-		unchecked {
-			double e = 0.0;
+	private static void Energy(NBody* sun, NBody* end) {
+		double e = 0.0;
 
-			for (NBody* bi = sun; bi <= end; ++bi) {
-				double
-					imass = bi->mass,
-					ix = bi->x,
-					iy = bi->y,
-					iz = bi->z,
-					ivx = bi->vx,
-					ivy = bi->vy,
-					ivz = bi->vz;
+		for (NBody* bi = sun; bi <= end; bi++) {
+			double imass = bi->mass;
+			double ix = bi->x;
+			double iy = bi->y;
+			double iz = bi->z;
+			double ivx = bi->vx;
+			double ivy = bi->vy;
+			double ivz = bi->vz;
 
-				e += 0.5 * imass * (ivx * ivx + ivy * ivy + ivz * ivz);
+			e += 0.5 * imass * ((ivx * ivx) + (ivy * ivy) + (ivz * ivz));
 
-				for (NBody* bj = bi + 1; bj <= end; ++bj) {
-					double
-						jmass = bj->mass,
-						dx = ix - bj->x,
-						dy = iy - bj->y,
-						dz = iz - bj->z;
+			for (NBody* bj = bi + 1; bj <= end; bj++) {
+				double jmass = bj->mass;
+				double dx = ix - bj->x;
+				double dy = iy - bj->y;
+				double dz = iz - bj->z;
 
-					e -= imass * jmass / Math.Sqrt(dx * dx + dy * dy + dz * dz);
-				}
+				e -= imass * jmass / double.Sqrt((dx * dx) + (dy * dy) + (dz * dz));
 			}
 		}
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	private double GetD2(double dx, double dy, double dz) {
-		double d2 = dx * dx + dy * dy + dz * dz;
+	private static double GetD2(double dx, double dy, double dz) {
+		double d2 = (dx * dx) + (dy * dy) + (dz * dz);
 
-		return d2 * Math.Sqrt(d2);
+		return d2 * double.Sqrt(d2);
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	private void Advance(NBody* sun, NBody* end, double distance) {
-		unchecked {
-			for (NBody* bi = sun; bi < end; ++bi) {
-				double
-					ix = bi->x,
-					iy = bi->y,
-					iz = bi->z,
-					ivx = bi->vx,
-					ivy = bi->vy,
-					ivz = bi->vz,
-					imass = bi->mass;
+	private static void Advance(NBody* sun, NBody* end, double distance) {
+		for (NBody* bi = sun; bi < end; bi++) {
+			double ix = bi->x;
+			double iy = bi->y;
+			double iz = bi->z;
+			double ivx = bi->vx;
+			double ivy = bi->vy;
+			double ivz = bi->vz;
+			double imass = bi->mass;
 
-				for (NBody* bj = bi + 1; bj <= end; ++bj) {
-					double
-						dx = bj->x - ix,
-						dy = bj->y - iy,
-						dz = bj->z - iz,
-						jmass = bj->mass,
-						mag = distance / GetD2(dx, dy, dz);
+			for (NBody* bj = bi + 1; bj <= end; bj++) {
+				double dx = bj->x - ix;
+				double dy = bj->y - iy;
+				double dz = bj->z - iz;
+				double jmass = bj->mass;
+				double mag = distance / GetD2(dx, dy, dz);
 
-					bj->vx = bj->vx - dx * imass * mag;
-					bj->vy = bj->vy - dy * imass * mag;
-					bj->vz = bj->vz - dz * imass * mag;
-					ivx = ivx + dx * jmass * mag;
-					ivy = ivy + dy * jmass * mag;
-					ivz = ivz + dz * jmass * mag;
-				}
-
-				bi->vx = ivx;
-				bi->vy = ivy;
-				bi->vz = ivz;
-				bi->x = ix + ivx * distance;
-				bi->y = iy + ivy * distance;
-				bi->z = iz + ivz * distance;
+				bj->vx = bj->vx - (dx * imass * mag);
+				bj->vy = bj->vy - (dy * imass * mag);
+				bj->vz = bj->vz - (dz * imass * mag);
+				ivx += dx * jmass * mag;
+				ivy += dy * jmass * mag;
+				ivz += dz * jmass * mag;
 			}
 
-			end->x = end->x + end->vx * distance;
-			end->y = end->y + end->vy * distance;
-			end->z = end->z + end->vz * distance;
+			bi->vx = ivx;
+			bi->vy = ivy;
+			bi->vz = ivz;
+			bi->x = ix + (ivx * distance);
+			bi->y = iy + (ivy * distance);
+			bi->z = iz + (ivz * distance);
 		}
+
+		end->x = end->x + (end->vx * distance);
+		end->y = end->y + (end->vy * distance);
+		end->z = end->z + (end->vz * distance);
 	}
 }
 
