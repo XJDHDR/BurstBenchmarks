@@ -8,7 +8,7 @@ public struct FibonacciNET : IJob {
 		result = Fibonacci(number);
 	}
 
-	private uint Fibonacci(uint number) {
+	private static uint Fibonacci(uint number) {
 		if (number <= 1)
 			return 1;
 
