@@ -10,18 +10,19 @@ public struct MandelbrotNET : IJob {
 		result = Mandelbrot(width, height, iterations);
 	}
 
-	private float Mandelbrot(uint width, uint height, uint iterations) {
+	private static float Mandelbrot(uint width, uint height, uint iterations) {
+		const float left = -2.1f;
+		const float right = 1.0f;
+		const float top = -1.3f;
+		const float bottom = 1.3f;
+
+		float deltaX = (right - left) / width;
+		float deltaY = (bottom - top) / height;
+
 		float data = 0.0f;
 
 		for (uint i = 0; i < iterations; i++) {
-			float
-				left = -2.1f,
-				right = 1.0f,
-				top = -1.3f,
-				bottom = 1.3f,
-				deltaX = (right - left) / width,
-				deltaY = (bottom - top) / height,
-				coordinateX = left;
+			float coordinateX = left;
 
 			for (uint x = 0; x < width; x++) {
 				float coordinateY = top;
@@ -31,12 +32,12 @@ public struct MandelbrotNET : IJob {
 					float workY = 0;
 					int counter = 0;
 
-					while (counter < 255 && Math.Sqrt((workX * workX) + (workY * workY)) < 2.0f) {
+					while (counter < 255 && float.Sqrt((workX * workX) + (workY * workY)) < 2.0f) {
 						counter++;
 
 						float newX = (workX * workX) - (workY * workY) + coordinateX;
 
-						workY = 2 * workX * workY + coordinateY;
+						workY = (2 * workX * workY) + coordinateY;
 						workX = newX;
 					}
 
