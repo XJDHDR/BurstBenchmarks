@@ -5,10 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a7d747bc-3dfe-474b-8308-8b76a452b618" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/Packages/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/manifest.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Packages/packages-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/Packages/packages-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/ProjectVersion.txt" beforeDir="false" afterPath="$PROJECT_DIR$/ProjectSettings/ProjectVersion.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ProjectSettings/boot.config" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../NET_project/.idea/.idea.NET_project/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../NET_project/.idea/.idea.NET_project/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../NET_project/Benchmarks.cs" beforeDir="false" afterPath="$PROJECT_DIR$/../NET_project/Benchmarks.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../NET_project/NET_project.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/../NET_project/NET_project.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.unity_project/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.unity_project/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assets/Scripts/Benchmarks.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Assets/Scripts/Benchmarks.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -62,7 +63,7 @@
 }</component>
   <component name="RunManager" selected="Attach to Unity Editor.Attach to Unity Editor">
     <configuration name="Standalone Player" type="RunUnityExe" factoryName="Unity Executable">
-      <option name="EXE_PATH" value="$PROJECT_DIR$/Builds/GCC + Mono - Win-x64\Burst Benchmarks.exe" />
+      <option name="EXE_PATH" value="$PROJECT_DIR$/../../../zzBurstBenchmarks Builds/IL2CPP\Burst Benchmarks.exe" />
       <option name="PROGRAM_PARAMETERS" value="" />
       <option name="WORKING_DIRECTORY" value="E:\Repos\BurstBenchmarks\unity_project\Builds\GCC + Mono - Win-x64" />
       <option name="PASS_PARENT_ENVS" value="1" />
