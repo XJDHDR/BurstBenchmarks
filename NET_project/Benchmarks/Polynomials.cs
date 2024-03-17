@@ -1,5 +1,8 @@
-﻿namespace NET_project.Benchmarks;
+﻿using System.Runtime.CompilerServices;
 
+namespace NET_project.Benchmarks;
+
+[SkipLocalsInit]
 public unsafe struct PolynomialsNET : IJob
 {
 	public uint iterations;
@@ -9,26 +12,24 @@ public unsafe struct PolynomialsNET : IJob
 		result = Polynomials(iterations);
 	}
 
-	private float Polynomials(uint iterations)
-	{
+	private static float Polynomials(uint iterations) {
 		const float x = 0.2f;
 
 		float pu = 0.0f;
-		float* poly = stackalloc float[100];
+		Span<float> poly = stackalloc float[100];
 
 		for (uint i = 0; i < iterations; i++) {
 			float mu = 10.0f;
-			float s;
-			int j;
 
-			for (j = 0; j < 100; j++) {
-				poly[j] = mu = (mu + 2.0f) / 2.0f;
+			for (int j = 0; j < poly.Length; j++) {
+				mu = (mu + 2.0f) / 2.0f;
+				poly[j] = mu;
 			}
 
-			s = 0.0f;
+			float s = 0.0f;
 
-			for (j = 0; j < 100; j++) {
-				s = x * s + poly[j];
+			for (int j = 0; j < poly.Length; j++) {
+				s = (x * s) + poly[j];
 			}
 
 			pu += s;

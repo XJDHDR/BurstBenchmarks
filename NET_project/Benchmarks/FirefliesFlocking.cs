@@ -16,13 +16,13 @@ public unsafe struct FirefliesFlockingNET : IJob {
 		result = FirefliesFlocking(boids, lifetime);
 	}
 
-	private uint parkMiller;
-	private float maxSpeed;
-	private float maxForce;
-	private float separationDistance;
-	private float neighbourDistance;
+	private static uint parkMiller;
+	private static float maxSpeed;
+	private static float maxForce;
+	private static float separationDistance;
+	private static float neighbourDistance;
 
-	private float FirefliesFlocking(uint boids, uint lifetime) {
+	private static float FirefliesFlocking(uint boids, uint lifetime) {
 		parkMiller = 666;
 		maxSpeed = 1.0f;
 		maxForce = 0.03f;
@@ -31,49 +31,54 @@ public unsafe struct FirefliesFlockingNET : IJob {
 
 		Boid[] fireflies = new Boid[boids];
 
-		for (uint i = 0; i < boids; ++i) {
-			fireflies[i].position = new Vector3 { X = Random(), Y = Random(), Z = Random() };
-			fireflies[i].velocity = new Vector3 { X = Random(), Y = Random(), Z = Random() };
-			fireflies[i].acceleration = new Vector3 { X = 0.0f, Y = 0.0f, Z = 0.0f };
+		for (uint i = 0; i < fireflies.Length; i++) {
+			ref Boid firefly = ref fireflies[i];
+
+			firefly.position = new Vector3(Random(), Random(), Random());
+			firefly.velocity = new Vector3(Random(), Random(), Random());
+			firefly.acceleration = Vector3.Zero;
 		}
 
-		for (uint i = 0; i < lifetime; ++i)
+		for (uint i = 0; i < lifetime; i++)
 		{
 			// Update
-			for (uint boid = 0; boid < boids; ++boid)
+			for (uint boid = 0; boid < fireflies.Length; boid++)
 			{
-				fireflies[boid].velocity = Vector3.Add(fireflies[boid].velocity, fireflies[boid].acceleration);
+				ref Boid firefly = ref fireflies[boid];
+				firefly.velocity += firefly.acceleration;
 
-				float speed = fireflies[boid].velocity.Length();
+				float speed = firefly.velocity.Length();
 
 				if (speed > maxSpeed)
 				{
-					fireflies[boid].velocity = Vector3.Divide(fireflies[boid].velocity, speed);
-					fireflies[boid].velocity = Vector3.Multiply(fireflies[boid].velocity, maxSpeed);
+					firefly.velocity /= speed;
+					firefly.velocity *= maxSpeed;
 				}
 
-				fireflies[boid].position = Vector3.Add(fireflies[boid].position, fireflies[boid].velocity);
-				fireflies[boid].acceleration = Vector3.Multiply(fireflies[boid].acceleration, maxSpeed);
+				firefly.position += firefly.velocity;
+				firefly.acceleration *= maxSpeed;
 			}
 
 			// Separation
-			for (uint boid = 0; boid < boids; ++boid)
+			for (uint boid = 0; boid < fireflies.Length; boid++)
 			{
-				Vector3 separation = default(Vector3);
+				ref Boid firefly = ref fireflies[boid];
+
+				Vector3 separation = Vector3.Zero;
 				int count = 0;
 
-				for (uint target = 0; target < boids; ++target) 
+				for (uint target = 0; target < fireflies.Length; target++) 
 				{
-					Vector3 position = fireflies[boid].position;
+					Vector3 position = firefly.position;
 
-					position = Vector3.Subtract(position, fireflies[target].position);
+					position -= fireflies[target].position;
 
 					float distance = position.Length();
 
 					if (distance > 0.0f && distance < separationDistance)
 					{
 						position = Vector3.Normalize(position);
-						position = Vector3.Divide(position, distance);
+						position /= distance;
 
 						separation = position;
 						count++;
@@ -82,72 +87,74 @@ public unsafe struct FirefliesFlockingNET : IJob {
 
 				if (count > 0)
 				{
-					separation = Vector3.Divide(separation, count);
+					separation /= count;
 					separation = Vector3.Normalize(separation);
-					separation = Vector3.Multiply(separation, maxSpeed);
-					separation = Vector3.Subtract(separation, fireflies[boid].velocity);
+					separation *= maxSpeed;
+					separation -= firefly.velocity;
 
 					float force = separation.Length();
 
 					if (force > maxForce)
 					{
-						separation = Vector3.Divide(separation, force);
-						separation = Vector3.Multiply(separation, maxForce);
+						separation /= force;
+						separation *= maxForce;
 					}
 
-					separation = Vector3.Multiply(separation, 1.5f);
-					fireflies[boid].acceleration = Vector3.Add(fireflies[boid].acceleration, separation);
+					separation *= 1.5f;
+					firefly.acceleration += separation;
 				}
 			}
 
 			// Cohesion
-			for (uint boid = 0; boid < boids; ++boid)
+			for (uint boid = 0; boid < fireflies.Length; boid++)
 			{
-				Vector3 cohesion = default(Vector3);
+				ref Boid firefly = ref fireflies[boid];
+
+				Vector3 cohesion = Vector3.Zero;
 				int count = 0;
 
-				for (uint target = 0; target < boids; ++target)
+				for (uint target = 0; target < fireflies.Length; target++)
 				{
-					Vector3 position = fireflies[boid].position;
+					Vector3 position = firefly.position;
 
-					position = Vector3.Subtract(position, fireflies[target].position);
+					position -= fireflies[target].position;
 
 					float distance = position.Length();
 
 					if (distance > 0.0f && distance < neighbourDistance)
 					{
-						cohesion = fireflies[boid].position;
+						cohesion = firefly.position;
 						count++;
 					}
 				}
 
 				if (count > 0)
 				{
-					cohesion = Vector3.Divide(cohesion, count);
-					cohesion = Vector3.Subtract(cohesion, fireflies[boid].position);
+					cohesion /= count;
+					cohesion -= firefly.position;
 					cohesion = Vector3.Normalize(cohesion);
-					cohesion = Vector3.Multiply(cohesion, maxSpeed);
-					cohesion = Vector3.Subtract(cohesion, fireflies[boid].velocity);
+					cohesion *= maxSpeed;
+					cohesion -= firefly.velocity;
 
 					float force = cohesion.Length();
 
 					if (force > maxForce)
 					{
-						cohesion = Vector3.Divide(cohesion, force);
-						cohesion = Vector3.Multiply(cohesion, maxForce);
+						cohesion /= force;
+						cohesion *= maxForce;
 					}
 
-					fireflies[boid].acceleration = Vector3.Add(fireflies[boid].acceleration, cohesion);
+					firefly.acceleration += cohesion;
 				}
 			}
 		}
 
-		return (float)parkMiller;
+		return parkMiller;
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	private float Random() {
-		parkMiller = (uint)(((ulong)parkMiller * 48271u) % 0x7fffffff);
+	private static float Random() {
+		parkMiller = (uint)((ulong)parkMiller * 48271u % 0x7fffffff);
 
 		return parkMiller / 10000000.0f;
 	}

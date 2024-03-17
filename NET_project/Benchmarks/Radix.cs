@@ -1,104 +1,90 @@
 ﻿using System.Runtime.CompilerServices;
-using System.Text;
+using System.Runtime.InteropServices;
 
 namespace NET_project.Benchmarks;
 
+[SkipLocalsInit]
 public unsafe struct RadixNET : IJob
 {
 	public uint iterations;
 	public int result;
 
-	public void Run()
-	{
+	public void Run() {
 		result = Radix(iterations);
 	}
 
-	private uint classicRandom;
+	private static uint classicRandom;
 
-	private int Radix(uint iterations)
-	{
+	private static int Radix(uint iterations) {
 		classicRandom = 7525;
+		Span<int> span = stackalloc int[128];
 
-		const int arrayLength = 128;
-
-		int[] array = new int[arrayLength];
-
-		for (uint a = 0; a < iterations; a++)
-		{
-			for (int b = 0; b < arrayLength; b++)
-			{
-				array[b] = Random();
+		for (uint a = 0; a < iterations; a++) {
+			for (int b = 0; b < span.Length; b++) {
+				span[b] = Random();
 			}
 
-			Sort(array, arrayLength, (a == 0));
+			Sort(span);
 		}
 
-		int head = array[0];
-
-		return head;
+		return span[0];
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	private int Random()
-	{
-		classicRandom = (6253729 * classicRandom + 4396403);
+	private static int Random() {
+		classicRandom = (6253729 * classicRandom) + 4396403;
 
 		return (int)(classicRandom % 32767);
 	}
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
-	private int FindLargest(int[] array, int length)
-	{
-		int i;
+	private static int FindLargest(Span<int> span) {
 		int largest = -1;
 
-		for (i = 0; i < length; i++)
+		for (int i = 0; i < span.Length; i++)
 		{
-			if (array[i] > largest)
-				largest = array[i];
+			if (span[i] > largest)
+				largest = span[i];
 		}
 
 		return largest;
 	}
 
-	private void Sort(int[] array, int length, bool printDone)
-	{
-		int i;
-		Span<int> semiSorted = stackalloc int[length];
+	private static void Sort(Span<int> span) {
+		const int bucketLength = 10;
+
+		// Neither of these can be Span<int> as the JIT cannot elide
+		// the bounds checks due to the contents of `span[i]` being unknown.
+		//
+		// We could use `Unsafe.Add` as is done for one of the accesses below,
+		// but just using pointers is faster and easier to read/maintain
+
+		int* semiSorted = stackalloc int[span.Length];
+		int* bucket = stackalloc int[bucketLength];
+
 		int significantDigit = 1;
-		int largest = FindLargest(array, length);
 
-		while (largest / significantDigit > 0)
-		{
-			significantDigit = sortIteration(semiSorted);
-		}
+		for (int largest = FindLargest(span); largest / significantDigit > 0; significantDigit *= 10) {
+			new Span<int>(bucket, bucketLength).Clear();
 
-		int sortIteration(Span<int> semiSorted)
-		{
-			Span<int> bucket = stackalloc int[10];
-
-			for (i = 0; i < length; i++)
-			{
-				bucket[(array[i] / significantDigit) % 10]++;
+			for (int i = 0; i < span.Length; i++) {
+				bucket[span[i] / significantDigit % 10]++;
 			}
 
-			for (i = 1; i < 10; i++)
-			{
+			for (int i = 1; i < bucketLength; i++) {
 				bucket[i] += bucket[i - 1];
 			}
 
-			for (i = length - 1; i >= 0; i--)
-			{
-				semiSorted[--bucket[(array[i] / significantDigit) % 10]] = array[i];
+			for (int i = span.Length - 1; i >= 0; i--) {
+				// The JIT can't currently elide bounds checks for reverse iterated
+				// loops so help it out by manually offsetting the reference.
+				int value = Unsafe.Add(ref MemoryMarshal.GetReference(span), i);
+				semiSorted[--bucket[value / significantDigit % 10]] = value;
 			}
 
-			for (i = 0; i < length; i++)
-			{
-				array[i] = semiSorted[i];
+			for (int i = 0; i < span.Length; i++) {
+				span[i] = semiSorted[i];
 			}
-
-			significantDigit *= 10;
-			return significantDigit;
 		}
 	}
 }

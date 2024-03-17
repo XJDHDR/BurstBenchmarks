@@ -1,7 +1,10 @@
-﻿namespace NET_project.Benchmarks;
+﻿using System.Numerics;
+
+namespace NET_project.Benchmarks;
 
 internal struct Particle {
-	public float x, y, z, vx, vy, vz;
+	public Vector3 i;
+	public Vector3 v;
 }
 
 public unsafe struct ParticleKinematicsNET : IJob
@@ -10,38 +13,30 @@ public unsafe struct ParticleKinematicsNET : IJob
 	public uint iterations;
 	public float result;
 
-	public void Run()
-	{
+	public void Run() {
 		result = ParticleKinematics(quantity, iterations);
 	}
 
-	private float ParticleKinematics(uint quantity, uint iterations)
-	{
+	private static float ParticleKinematics(uint quantity, uint iterations) {
 		Particle[] particles = new Particle[quantity];
 
-		for (uint i = 0; i < quantity; ++i)
-		{
-			particles[i].x = i;
-			particles[i].y = (i + 1);
-			particles[i].z = (i + 2);
-			particles[i].vx = 1.0f;
-			particles[i].vy = 2.0f;
-			particles[i].vz = 3.0f;
+		for (int i = 0; i < particles.Length; i++) {
+			particles[i].i = new Vector3(i) + new Vector3(0, 1, 2);
+			particles[i].v = new Vector3(1, 2, 3);
 		}
 
-		for (uint a = 0; a < iterations; ++a)
-		{
-			for (uint b = 0, c = quantity; b < c; ++b)
-			{
-				particles[b].x += particles[b].vx;
-				particles[b].y += particles[b].vy;
-				particles[b].z += particles[b].vz;
+		for (uint a = 0; a < iterations; a++) {
+			for (int b = 0; b < particles.Length; b++) {
+				particles[b].i += particles[b].v;
 			}
 		}
 
-		Particle particle = new Particle { x = particles[0].x, y = particles[0].y, z = particles[0].z };
-
-		return particle.x + particle.y + particle.z;
+		if (particles.Length == 0)
+		{
+			// Help the JIT by testing for quantity == 0
+			return default;
+		}
+		return particles[0].i.X + particles[0].i.Y + particles[0].i.Z;
 	}
 }
 
