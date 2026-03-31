@@ -27,12 +27,17 @@ namespace BenchmarkCode.Single
 
 			for (uint i = 0; i < quantity; ++i)
 			{
-				particles[i].x = i;
-				particles[i].y = (i + 1);
-				particles[i].z = (i + 2);
-				particles[i].vx = 1.0f;
-				particles[i].vy = 2.0f;
-				particles[i].vz = 3.0f;
+				Particle newParticle = new Particle()
+				{
+					x = i,
+					y = (i + 1),
+					z = (i + 2),
+					vx = 1.0f,
+					vy = 2.0f,
+					vz = 3.0f,
+				};
+				
+				particles[i] = newParticle;
 			}
 
 			for (uint a = 0; a < iterations; ++a)
@@ -40,10 +45,12 @@ namespace BenchmarkCode.Single
 				for (uint b = 0, c = quantity; b < c; ++b)
 				{
 					Particle p = particles[b];
-
+					
 					p.x += p.vx;
 					p.y += p.vy;
 					p.z += p.vz;
+					
+					particles[b] = p;
 				}
 			}
 

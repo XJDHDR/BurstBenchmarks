@@ -45,6 +45,8 @@ namespace BenchmarkCode.Single
 					p.x += p.vx;
 					p.y += p.vy;
 					p.z += p.vz;
+					
+					particles[b] = p;
 				}
 			}
 
